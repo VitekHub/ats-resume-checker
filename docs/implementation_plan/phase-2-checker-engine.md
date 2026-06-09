@@ -201,17 +201,17 @@
 
 **Goal:** Port `check_metadata()` to the new architecture.
 
-- [ ] Create `MetadataChecker(BaseChecker)`:
+- [x] Create `MetadataChecker(BaseChecker)`:
   - `name = "metadata"`
   - `description = "Checks PDF metadata for personal information leaks"`
   - `requires_text = False`
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Use `PDFDocument.metadata` property
   - Check author, subject, creator, producer fields
   - Use `config.software_keywords` to filter out software names
   - Personal info leak → WARNING
   - Clean → OK
-- [ ] Add `remediation`: "Strip metadata in your PDF editor (File → Properties)."
+- [x] Add `remediation`: "Strip metadata in your PDF editor (File → Properties)."
 
 **Acceptance:** Metadata privacy detection matches original logic.
 
