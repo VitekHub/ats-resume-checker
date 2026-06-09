@@ -62,17 +62,17 @@
 
 **Goal:** Port `check_file_size()` to the new architecture.
 
-- [ ] Create `FileSizeChecker(BaseChecker)`:
+- [x] Create `FileSizeChecker(BaseChecker)`:
   - `name = "file_size"`
   - `description = "Checks PDF file size against common portal upload limits"`
   - `requires_text = False`
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Get `file_size_kb` from `PDFDocument`
   - Compare against `config.max_file_size_kb` (critical) and `config.warning_file_size_kb` (warning)
   - Return `[Issue]` list
-- [ ] All thresholds come from config, no hard-coded values
-- [ ] Add `remediation` field to each Issue with actionable advice
-- [ ] Add `location` field (e.g., `"Entire file"`)
+- [x] All thresholds come from config, no hard-coded values
+- [x] Add `remediation` field to each Issue with actionable advice
+- [x] Add `location` field (e.g., `"Entire file"`)
 
 **Acceptance:** Running `FileSizeChecker(config).check(pdf)` produces the same logical results as the original `check_file_size()` for the same inputs.
 
