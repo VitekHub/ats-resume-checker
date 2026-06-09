@@ -39,13 +39,13 @@
 
 **Goal:** Create a factory to get the right reporter by name.
 
-- [ ] Create `get_reporter(format_name: str) -> BaseReporter`:
+- [x] Create `get_reporter(format_name: str) -> BaseReporter`:
   - `"terminal"` → `TerminalReporter`
   - `"json"` → `JSONReporter`
   - `"html"` → `HTMLReporter`
   - Raise `ValueError` for unknown formats
-- [ ] Create `list_formats() -> list[str]` — returns `["terminal", "json", "html"]`
-- [ ] Register reporters via import (no manual mapping — each reporter registers itself)
+- [x] Create `list_formats() -> list[str]` — returns `["terminal", "json", "html"]`
+- [x] Register reporters via import (no manual mapping — each reporter registers itself)
 
 **Acceptance:** `get_reporter("json")` returns a `JSONReporter` instance.
 
