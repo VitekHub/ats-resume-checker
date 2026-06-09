@@ -10,9 +10,6 @@ from . import (
 )
 from .base import _REPORTERS, BaseReporter, register_reporter
 
-# from . import json_reporter  # Added as they are implemented
-# from . import html_reporter # Added as they are implemented
-
 
 def get_reporter(format_name: str) -> BaseReporter:
     """

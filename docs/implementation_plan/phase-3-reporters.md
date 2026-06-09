@@ -156,11 +156,11 @@
 
 **Goal:** Move the `.extracted.txt` sidecar generation from the checker to a reporter concern.
 
-- [ ] Create `save_extracted_text(result: CheckReport, pdf_path: Path) -> Path`:
+- [x] Create `save_extracted_text(result: CheckReport, pdf_path: Path) -> Path`:
   - Writes `CheckReport.all_text` (from text extraction checker) to `{stem}.extracted.txt`
   - Only writes if text extraction checker ran and found text
   - This is not a full reporter class — it's a utility called by the terminal reporter
-- [ ] Add `--save-text` CLI flag (deferred to Phase 4, but add the function now)
+- [x] Add `--save-text` CLI flag (deferred to Phase 4, but add the function now)
 
 **Acceptance:** Calling `save_extracted_text()` creates the sidecar file matching original behavior.
 

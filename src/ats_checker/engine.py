@@ -8,6 +8,7 @@ from ats_checker.checkers.registry import CheckerRegistry
 from ats_checker.config import Config
 from ats_checker.models import CheckerResult, CheckReport, Issue, Severity
 from ats_checker.pdf_utils import PDFDocument, extract_text
+from ats_checker.reporters.utils import save_extracted_text
 
 logger = logging.getLogger(__name__)
 
@@ -53,11 +54,12 @@ def run_check(
 
     # 2. Execute checks within PDF document context
     results: List[CheckerResult] = []
+    all_text: str | None = None
 
     with PDFDocument(pdf_path) as pdf:
         # Pre-load text if any selected checker requires it
         if any(cls.requires_text for cls in resolved_checker_classes):
-            extract_text(pdf)
+            all_text = extract_text(pdf)
 
         for checker_class in resolved_checker_classes:
             checker_name = checker_class.name
@@ -91,8 +93,14 @@ def run_check(
             )
 
     # 3. Assemble the final report
-    return CheckReport(
+    report = CheckReport(
         pdf_path=pdf_path,
         check_results=results,
+        all_text=all_text,
         score=None,  # Scoring implemented in Phase 7
     )
+
+    # Save extracted text as sidecar file
+    save_extracted_text(report, pdf_path)
+
+    return report
