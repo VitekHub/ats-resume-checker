@@ -112,7 +112,6 @@ class TerminalReporter(BaseReporter):
         footer = Panel(Text(verdict, style=verdict_style), border_style=verdict_style, expand=False)
         console.print(footer)
 
-
     def report(self, result: CheckReport, output: Path | None = None) -> str:
         """
         Generate a formatted report as a string.
