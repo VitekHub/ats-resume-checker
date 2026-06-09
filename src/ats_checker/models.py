@@ -121,4 +121,3 @@ class ImageInfo(BaseModel):
         if v <= 0:
             raise ValueError("Dimension must be positive")
         return v
-

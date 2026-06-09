@@ -129,13 +129,15 @@ def extract_words(pdf: PDFDocument) -> list[dict[str, Any]]:
             # Ensure the result matches the expected format:
             # {"text": ..., "x0": ..., "x1": ..., "top": ..., "bottom": ...}
             for w in page_words:
-                words.append({
-                    "text": w["text"],
-                    "x0": w["x0"],
-                    "x1": w["x1"],
-                    "top": w["top"],
-                    "bottom": w["bottom"],
-                })
+                words.append(
+                    {
+                        "text": w["text"],
+                        "x0": w["x0"],
+                        "x1": w["x1"],
+                        "top": w["top"],
+                        "bottom": w["bottom"],
+                    }
+                )
     except Exception as e:
         raise ExtractionError(f"Failed to extract words: {e}") from e
 
@@ -162,8 +164,7 @@ def extract_images_info(pdf: PDFDocument, config: Config) -> list[ImageInfo]:
                 height = pix.height
 
                 is_large = (
-                    width >= config.images.large_width_px or
-                    height >= config.images.large_height_px
+                    width >= config.images.large_width_px or height >= config.images.large_height_px
                 )
 
                 images_info.append(
