@@ -38,21 +38,21 @@
 
 **Goal:** Create a discovery and registration system for checkers.
 
-- [ ] Create `CheckerRegistry` class:
+- [x] Create `CheckerRegistry` class:
   - `register(checker_class: type[BaseChecker]) -> None` — decorator or method
   - `get(name: str) -> type[BaseChecker]` — retrieve by name
   - `get_all() -> list[type[BaseChecker]]` — return all registered
   - `get_default() -> list[type[BaseChecker]]` — return the standard set
-- [ ] Provide `@register_checker` decorator:
+- [x] Provide `@register_checker` decorator:
   ```python
   @register_checker
   class FileSizeChecker(BaseChecker):
       ...
   ```
-- [ ] Auto-discovery: import all modules in `checkers/` package so decorators fire
-- [ ] Support `--checker` / `--skip-checker` CLI overrides (deferred to Phase 4,
+- [x] Auto-discovery: import all modules in `checkers/` package so decorators fire
+- [x] Support `--checker` / `--skip-checker` CLI overrides (deferred to Phase 4,
       but registry must support building a subset list by name)
-- [ ] Add `__all__` export in `checkers/__init__.py`
+- [x] Add `__all__` export in `checkers/__init__.py`
 
 **Acceptance:** Registering a checker and retrieving it by name works. Listing all registered checkers returns the full set.
 
