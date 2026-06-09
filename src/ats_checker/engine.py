@@ -8,7 +8,6 @@ from ats_checker.checkers.registry import CheckerRegistry
 from ats_checker.config import Config
 from ats_checker.models import CheckerResult, CheckReport, Issue, Severity
 from ats_checker.pdf_utils import PDFDocument, extract_text
-from ats_checker.reporters.utils import save_extracted_text
 
 logger = logging.getLogger(__name__)
 
@@ -99,8 +98,5 @@ def run_check(
         all_text=all_text,
         score=None,  # Scoring implemented in Phase 7
     )
-
-    # Save extracted text as sidecar file
-    save_extracted_text(report, pdf_path)
 
     return report
