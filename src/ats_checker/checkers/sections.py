@@ -11,6 +11,7 @@ class SectionsChecker(BaseChecker):
     """
     Checks for standard resume sections that ATS parsers expect.
     """
+
     name = "sections"
     description = "Checks for standard resume sections that ATS parsers expect"
     requires_text = True
@@ -49,7 +50,7 @@ class SectionsChecker(BaseChecker):
                         f"headers like Experience, Education, Skills."
                     ),
                     remediation="Use standard section headers like Experience, Education, Skills.",
-                    location="Entire file"
+                    location="Entire file",
                 )
             ]
 
@@ -61,6 +62,6 @@ class SectionsChecker(BaseChecker):
                 title="All key sections found",
                 detail=f"Detected: {found_list}",
                 remediation="",
-                location="Entire file"
+                location="Entire file",
             )
         ]

@@ -43,7 +43,7 @@ class ImagesChecker(BaseChecker):
                     title="Large embedded image(s) detected",
                     detail="ATS may fail to parse the surrounding text or ignore the file.",
                     remediation="Remove portrait photos, large graphics, or scanned "
-                                "elements. Convert to plain text if necessary.",
+                    "elements. Convert to plain text if necessary.",
                     location=location,
                     checker_name=self.name,
                 )
@@ -57,9 +57,8 @@ class ImagesChecker(BaseChecker):
                     severity=Severity.WARNING,
                     title="Small embedded images/icons detected",
                     detail="While usually ignored, excessive use of symbols can sometimes "
-                            "confuse simpler ATS parsers.",
-                    remediation="Replace complex icons with standard bullet points or "
-                                "text labels.",
+                    "confuse simpler ATS parsers.",
+                    remediation="Replace complex icons with standard bullet points or text labels.",
                     location=location,
                     checker_name=self.name,
                 )

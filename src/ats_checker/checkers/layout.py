@@ -11,6 +11,7 @@ class LayoutChecker(BaseChecker):
     """
     Detects multi-column layouts and tables that scramble ATS text order.
     """
+
     name = "layout"
     description = "Detects multi-column layouts and tables that scramble ATS text order"
     requires_text = True
@@ -31,7 +32,7 @@ class LayoutChecker(BaseChecker):
                     title="PDF Document Error",
                     detail="Unable to access PDF structure for layout analysis.",
                     remediation="Ensure the PDF is not corrupted or password-protected.",
-                    location="Entire file"
+                    location="Entire file",
                 )
             ]
 
@@ -54,7 +55,7 @@ class LayoutChecker(BaseChecker):
                             "Use single-column layout. Replace tables with "
                             "section headers and bullet points."
                         ),
-                        location=location
+                        location=location,
                     )
                 )
 
@@ -85,10 +86,10 @@ class LayoutChecker(BaseChecker):
                                         "column text may get interleaved and jumbled."
                                     ),
                                     remediation=(
-                            "Use single-column layout. Replace tables with "
-                            "section headers and bullet points."
-                        ),
-                                    location=location
+                                        "Use single-column layout. Replace tables with "
+                                        "section headers and bullet points."
+                                    ),
+                                    location=location,
                                 )
                             )
 
@@ -100,7 +101,7 @@ class LayoutChecker(BaseChecker):
                     title="Single-column layout detected",
                     detail="Text appears in a single column — ATS will read it in order.",
                     remediation="",
-                    location="Entire file"
+                    location="Entire file",
                 )
             )
 

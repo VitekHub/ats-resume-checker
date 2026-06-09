@@ -221,11 +221,11 @@
 
 **Goal:** Port `check_special_characters()` to the new architecture.
 
-- [ ] Create `SpecialCharsChecker(BaseChecker)`:
+- [x] Create `SpecialCharsChecker(BaseChecker)`:
   - `name = "special_chars"`
   - `description = "Flags unusual Unicode characters that may not parse in ATS"`
   - `requires_text = True`
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Check extracted text for characters in problematic Unicode ranges
   - Same ranges as original: General Punctuation, Arrows, Box Drawing,
     Geometric Shapes, Miscellaneous Symbols, Dingbats
@@ -233,7 +233,7 @@
   - Sample up to 5 characters per category
   - Issues found → WARNING with character list
   - None found → OK
-- [ ] Add `remediation`: "Replace Unicode symbols with plain ASCII equivalents (use - instead of —, * instead of •)."
+- [x] Add `remediation`: "Replace Unicode symbols with plain ASCII equivalents (use - instead of —, * instead of •)."
 
 **Acceptance:** Special character detection matches original logic.
 

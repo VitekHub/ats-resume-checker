@@ -9,6 +9,7 @@ class FileSizeChecker(BaseChecker):
     """
     Checks PDF file size against common portal upload limits.
     """
+
     name = "file_size"
     description = "Checks PDF file size against common portal upload limits"
     requires_text = False
@@ -30,8 +31,7 @@ class FileSizeChecker(BaseChecker):
                     detail=f"{size_kb:.0f} KB — many portals reject files over {critical_kb} KB",
                     checker_name=self.name,
                     remediation=(
-                        "Compress the PDF or remove high-resolution images to "
-                        "reduce file size."
+                        "Compress the PDF or remove high-resolution images to reduce file size."
                     ),
                     location="Entire file",
                 )
@@ -44,8 +44,7 @@ class FileSizeChecker(BaseChecker):
                     detail=f"{size_kb:.0f} KB — some portals cap uploads at {warning_kb} KB",
                     checker_name=self.name,
                     remediation=(
-                        "Consider optimizing the PDF size to ensure "
-                        "compatibility with all portals."
+                        "Consider optimizing the PDF size to ensure compatibility with all portals."
                     ),
                     location="Entire file",
                 )

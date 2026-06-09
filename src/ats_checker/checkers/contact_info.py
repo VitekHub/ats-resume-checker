@@ -12,6 +12,7 @@ class ContactInfoChecker(BaseChecker):
     Detects presence of essential contact information (email and phone) in the resume.
     ATS parsers need these to correctly identify and contact the candidate.
     """
+
     name = "contact_info"
     description = "Detects email and phone number in the resume text"
     requires_text = True
