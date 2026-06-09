@@ -82,6 +82,11 @@ class PDFDocument:
             raise ExtractionError("PDF document is not open")
         return cast(dict[str, Any], self._fitz_doc.metadata)
 
+    @property
+    def text(self) -> str:
+        """Return the full extracted text of the document."""
+        return extract_text(self)
+
     def get_page_text(self, page_index: int) -> str:
         """
         Extract text from a specific page, using a cache to avoid re-extraction.

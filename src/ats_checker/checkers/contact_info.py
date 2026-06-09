@@ -26,6 +26,7 @@ class ContactInfoChecker(BaseChecker):
                     severity=Severity.CRITICAL,
                     title="No text found",
                     detail="Could not extract any text from the PDF to check for contact info.",
+                    checker_name=self.name,
                     location="Entire document",
                 )
             ]
@@ -48,6 +49,7 @@ class ContactInfoChecker(BaseChecker):
                     title="No email address detected",
                     detail="ATS needs your email to contact you. Make sure it's plain text, "
                     "not in an image or special font.",
+                    checker_name=self.name,
                     location="Entire document",
                 )
             )
@@ -58,6 +60,7 @@ class ContactInfoChecker(BaseChecker):
                     severity=Severity.WARNING,
                     title="No phone number detected",
                     detail="Consider adding a phone number in plain text format.",
+                    checker_name=self.name,
                     location="Entire document",
                 )
             )
@@ -68,6 +71,7 @@ class ContactInfoChecker(BaseChecker):
                     severity=Severity.OK,
                     title="Contact info found",
                     detail="Email and phone detected in readable text.",
+                    checker_name=self.name,
                     location="Entire document",
                 )
             )

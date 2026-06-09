@@ -31,8 +31,9 @@ class LayoutChecker(BaseChecker):
                     severity=Severity.CRITICAL,
                     title="PDF Document Error",
                     detail="Unable to access PDF structure for layout analysis.",
+                    checker_name=self.name,
                     remediation="Ensure the PDF is not corrupted or password-protected.",
-                    location="Entire file",
+                    location="Entire document",
                 )
             ]
 
@@ -51,6 +52,7 @@ class LayoutChecker(BaseChecker):
                             "ATS often reads table cells in wrong order. "
                             "Prefer simple section headers with bullet points."
                         ),
+                        checker_name=self.name,
                         remediation=(
                             "Use single-column layout. Replace tables with "
                             "section headers and bullet points."
@@ -85,6 +87,7 @@ class LayoutChecker(BaseChecker):
                                         "ATS reads left-to-right, top-to-bottom — "
                                         "column text may get interleaved and jumbled."
                                     ),
+                                    checker_name=self.name,
                                     remediation=(
                                         "Use single-column layout. Replace tables with "
                                         "section headers and bullet points."
@@ -100,8 +103,9 @@ class LayoutChecker(BaseChecker):
                     severity=Severity.OK,
                     title="Single-column layout detected",
                     detail="Text appears in a single column — ATS will read it in order.",
+                    checker_name=self.name,
                     remediation="",
-                    location="Entire file",
+                    location="Entire document",
                 )
             )
 

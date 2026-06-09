@@ -49,8 +49,9 @@ class SectionsChecker(BaseChecker):
                         f"section headers to categorize your content. Use standard "
                         f"headers like Experience, Education, Skills."
                     ),
+                    checker_name=self.name,
                     remediation="Use standard section headers like Experience, Education, Skills.",
-                    location="Entire file",
+                    location="Entire document",
                 )
             ]
 
@@ -61,7 +62,8 @@ class SectionsChecker(BaseChecker):
                 severity=Severity.OK,
                 title="All key sections found",
                 detail=f"Detected: {found_list}",
+                checker_name=self.name,
                 remediation="",
-                location="Entire file",
+                location="Entire document",
             )
         ]

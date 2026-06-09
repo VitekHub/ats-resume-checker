@@ -37,18 +37,11 @@ class TerminalReporter(BaseReporter):
             color_system="auto" if self._cfg.output.color_output else None,
         )
 
-    def report(self, result: CheckReport, output: Path | None = None) -> str:
+    def _render_report(self, console: Console, result: CheckReport) -> None:
         """
-        Generate a formatted Rich report as a string.
+        Internal method to perform the actual rendering of the report
+        to the provided rich.console.Console.
         """
-        # Use a dedicated console with a StringIO buffer to capture the rendered text
-        capture_console = Console(
-            file=io.StringIO(),
-            force_terminal=True,
-            color_system="auto" if self._cfg.output.color_output else None,
-            width=self.console.width,
-        )
-
         # 1. Header Table
         header = Table.grid(padding=(0, 1))
         header.add_column(style="bold cyan")
@@ -58,8 +51,8 @@ class TerminalReporter(BaseReporter):
         if result.score is not None:
             header.add_row("Score:", f"{result.score:.1f}%")
 
-        capture_console.print(header)
-        capture_console.print("\n")
+        console.print(header)
+        console.print("\n")
 
         # 2. Issue Grouping and Rendering
         grouped: Dict[Severity, List] = {s: [] for s in Severity}
@@ -79,7 +72,7 @@ class TerminalReporter(BaseReporter):
                 f"{_SEVERITY_ICON[sev]} {sev.value.title()} Issues",
                 style=f"bold {_SEVERITY_CLR[sev]}",
             )
-            capture_console.print(sev_title)
+            console.print(sev_title)
 
             sev_table = Table(
                 show_header=True,
@@ -102,8 +95,8 @@ class TerminalReporter(BaseReporter):
                     i.remediation or "-",
                 )
 
-            capture_console.print(Panel(sev_table, border_style=_SEVERITY_CLR[sev]))
-            capture_console.print("\n")
+            console.print(Panel(sev_table, border_style=_SEVERITY_CLR[sev]))
+            console.print("\n")
 
         # 3. Verdict Footer
         if result.critical_count > 0:
@@ -117,8 +110,20 @@ class TerminalReporter(BaseReporter):
             verdict_style = "bold green"
 
         footer = Panel(Text(verdict, style=verdict_style), border_style=verdict_style, expand=False)
-        capture_console.print(footer)
+        console.print(footer)
 
+    def report(self, result: CheckReport, output: Path | None = None) -> str:
+        """
+        Generate a formatted report as a string.
+        """
+        capture_console = Console(
+            file=io.StringIO(),
+            force_terminal=False,
+            color_system=None,
+            width=self.console.width,
+        )
+
+        self._render_report(capture_console, result)
         full_report = capture_console.file.getvalue()
 
         # Write to file if output path is provided
@@ -131,8 +136,4 @@ class TerminalReporter(BaseReporter):
         """
         Print the report directly to the terminal.
         """
-        # Instead of just printing the string from report(),
-        # we use the actual console to maintain the best rendering
-        # But since report() now returns the string, we can just use that.
-        # To be safe and efficient, we call report and print the result.
-        self.console.print(self.report(result))
+        self._render_report(self.console, result)

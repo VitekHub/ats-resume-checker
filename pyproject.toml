@@ -40,6 +40,7 @@ packages = ["src/ats_checker"]
 line-length = 100
 target-version = "py311"
 lint.select = ["E", "F", "I"] # Pyflakes, Error, Isort
+extend-exclude = ["*.html"]
 
 [tool.mypy]
 strict = true

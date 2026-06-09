@@ -24,7 +24,7 @@ class ImagesChecker(BaseChecker):
                     title="No embedded images detected",
                     detail="The document is clean of potential image-based parsing barriers.",
                     remediation=None,
-                    location="Entire file",
+                    location="Entire document",
                     checker_name=self.name,
                 )
             ]
