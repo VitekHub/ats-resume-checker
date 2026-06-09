@@ -1,7 +1,28 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Type
 
 from ..models import CheckReport
+
+# Private registry mapping format_name -> reporter class
+_REPORTERS: dict[str, Type["BaseReporter"]] = {}
+
+
+def register_reporter(cls: Type["BaseReporter"]) -> Type["BaseReporter"]:
+    """
+    Class decorator for reporter subclasses.
+
+    Registers the class in `_REPORTERS` using its `format_name`.
+    """
+    if not hasattr(cls, "format_name"):
+        raise AttributeError(f"{cls.__name__} must define a class attribute `format_name`.")
+
+    name = cls.format_name
+    if name in _REPORTERS:
+        raise ValueError(f"Reporter already registered for format: {name!r}")
+
+    _REPORTERS[name] = cls
+    return cls
 
 
 class BaseReporter(ABC):

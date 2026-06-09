@@ -2,29 +2,12 @@
 Reporter registry and factory for ats_checker.
 """
 
-from typing import Type
+# Import reporters to trigger their self-registration
+from . import terminal  # noqa: F401
+from .base import _REPORTERS, BaseReporter, register_reporter
 
-from .base import BaseReporter
-
-# Private registry mapping format_name -> reporter class
-_REPORTERS: dict[str, Type[BaseReporter]] = {}
-
-
-def register_reporter(cls: Type[BaseReporter]) -> Type[BaseReporter]:
-    """
-    Class decorator for reporter subclasses.
-
-    Registers the class in `_REPORTERS` using its `format_name`.
-    """
-    if not hasattr(cls, "format_name"):
-        raise AttributeError(f"{cls.__name__} must define a class attribute `format_name`.")
-
-    name = cls.format_name
-    if name in _REPORTERS:
-        raise ValueError(f"Reporter already registered for format: {name!r}")
-
-    _REPORTERS[name] = cls
-    return cls
+# from . import json_reporter  # Added as they are implemented
+# from . import html_reporter # Added as they are implemented
 
 
 def get_reporter(format_name: str) -> BaseReporter:

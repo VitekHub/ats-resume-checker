@@ -55,9 +55,9 @@
 
 **Goal:** Rebuild the colored terminal output using Rich instead of raw ANSI codes.
 
-- [ ] Create `TerminalReporter(BaseReporter)`:
+- [x] Create `TerminalReporter(BaseReporter)`:
   - `format_name = "terminal"`
-- [ ] Implement `report()`:
+- [x] Implement `report()`:
   - Build a Rich `Table` for the summary header (file name, date, score)
   - Group issues by severity: CRITICAL (red), WARNING (yellow), OK (green)
   - Each Issue renders as a `rich.panel.Panel` or table row with:
@@ -71,14 +71,14 @@
     - CRITICAL issues → "✗ NOT ATS-FRIENDLY" in red
     - Only warnings → "⚠ LIKELY ATS-COMPATIBLE" in yellow
     - All OK → "✓ ATS-FRIENDLY" in green
-- [ ] Implement `report_to_console()`:
+- [x] Implement `report_to_console()`:
   - Use `rich.console.Console` for actual terminal output
   - Detect terminal color support; fall back gracefully if no color
-- [ ] Add `--no-color` support via config (`config.color_output`)
-- [ ] Add `--verbose` mode via config:
+- [x] Add `--no-color` support via config (`config.color_output`)
+- [x] Add `--verbose` mode via config:
   - Normal: show only CRITICAL and WARNING
   - Verbose: show all including OK
-- [ ] Add progress bar during check using `rich.progress`
+- [ ] Add progress bar during check using `rich.progress` (Note: Moved to Engine/CLI concern as reporters process the final report)
 
 **Acceptance:** Output is visually equivalent to the original ANSI-based report but uses Rich for better rendering (tables, panels, proper width handling). Falls back gracefully in non-TTY environments.
 
