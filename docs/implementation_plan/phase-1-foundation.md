@@ -114,7 +114,7 @@
 
 **Goal:** Create a type-safe, layered configuration system.
 
-- [ ] Define `Config` using Pydantic Settings:
+- [x] Define `Config` using Pydantic Settings:
   - Thresholds:
     - `max_file_size_kb: int = 1024`
     - `warning_file_size_kb: int = 500`
@@ -139,11 +139,11 @@
     - `verbose: bool = False`
   - Metadata:
     - `software_keywords: set[str]` — words that indicate software, not a person
-- [ ] Support config file loading (`.toml` or `.yaml`)
-- [ ] Support environment variable overrides (e.g., `ATS_CHECKER_MAX_FILE_SIZE_KB`)
-- [ ] Support programmatic override in CLI flags
-- [ ] Add `from_current_script()` class method that mirrors current `ats_check.py` defaults
-- [ ] Validate config on load (e.g., warning threshold < critical threshold)
+- [x] Support config file loading (`.toml` or `.yaml`)
+- [x] Support environment variable overrides (e.g., `ATS_CHECKER_MAX_FILE_SIZE_KB`)
+- [x] Support programmatic override in CLI flags
+- [x] Add `from_current_script()` class method that mirrors current `ats_check.py` defaults
+- [x] Validate config on load (e.g., warning threshold < critical threshold)
 
 **Acceptance:** Config can be loaded from defaults, from file, from env vars, and merged correctly.
 
