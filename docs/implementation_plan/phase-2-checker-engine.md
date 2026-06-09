@@ -123,16 +123,16 @@
 
 **Goal:** Port `check_columns_and_tables()` to the new architecture.
 
-- [ ] Create `LayoutChecker(BaseChecker)`:
+- [x] Create `LayoutChecker(BaseChecker)`:
   - `name = "layout"`
   - `description = "Detects multi-column layouts and tables that scramble ATS text order"`
   - `requires_text = True` (needs word positions)
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Table detection using `pdfplumber` page tables
   - Multi-column detection using word X-position clustering
   - Use `config.column_gap_threshold` and `config.min_words_for_column_check`
   - Include page number in `location` field
-- [ ] Add `remediation`: "Use single-column layout. Replace tables with section headers and bullet points."
+- [x] Add `remediation`: "Use single-column layout. Replace tables with section headers and bullet points."
 
 **Acceptance:** Produces equivalent results to `check_columns_and_tables()`.
 
