@@ -4,6 +4,7 @@ Reporter registry and factory for ats_checker.
 
 # Import reporters to trigger their self-registration
 from . import (
+    html_reporter,  # noqa: F401
     json_reporter,  # noqa: F401
     terminal,  # noqa: F401
 )

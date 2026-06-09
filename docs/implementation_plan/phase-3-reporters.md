@@ -132,9 +132,9 @@
 
 **Goal:** Produce a self-contained HTML report that can be shared or archived.
 
-- [ ] Create `HTMLReporter(BaseReporter)`:
+- [x] Create `HTMLReporter(BaseReporter)`:
   - `format_name = "html"`
-- [ ] Implement `report()`:
+- [x] Implement `report()`:
   - Generate a self-contained HTML file with embedded CSS (no external dependencies)
   - Use semantic HTML structure:
     - `<header>` with file name and timestamp
@@ -145,8 +145,8 @@
   - Print-friendly CSS: `@media print` rules
   - Color scheme matching terminal output (red/yellow/green severity)
   - Include a "Exported from ATS Resume Checker" footer with version
-- [ ] Use Python's built-in `html` module for escaping (security: prevent XSS from PDF content)
-- [ ] Write to file if `output` path is provided
+- [x] Use Python's built-in `html` module for escaping (security: prevent XSS from PDF content)
+- [x] Write to file if `output` path is provided
 
 **Acceptance:** HTML report opens in a browser, is readable, and looks professional. No external CSS/JS dependencies.
 
