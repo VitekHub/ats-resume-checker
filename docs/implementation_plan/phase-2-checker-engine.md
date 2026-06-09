@@ -142,17 +142,17 @@
 
 **Goal:** Port section detection logic (minus contact info) to the new architecture.
 
-- [ ] Create `SectionsChecker(BaseChecker)`:
+- [x] Create `SectionsChecker(BaseChecker)`:
   - `name = "sections"`
   - `description = "Checks for standard resume sections that ATS parsers expect"`
   - `requires_text = True`
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Use `config.expected_sections` for the section → keywords mapping
   - Search for each section's keywords in extracted text
   - Report missing sections as WARNING
   - Report found sections as OK
-- [ ] Separate from contact info (which moves to its own checker)
-- [ ] Add `remediation`: "Use standard section headers like Experience, Education, Skills."
+- [x] Separate from contact info (which moves to its own checker)
+- [x] Add `remediation`: "Use standard section headers like Experience, Education, Skills."
 
 **Acceptance:** Correctly detects section headers using config-defined keywords.
 
