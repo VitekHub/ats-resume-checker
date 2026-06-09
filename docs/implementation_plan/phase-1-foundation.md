@@ -75,25 +75,25 @@
 
 **Goal:** Create the core data structures that flow through the entire system.
 
-- [ ] Define `Severity` enum:
+- [x] Define `Severity` enum:
   ```python
   class Severity(str, Enum):
       CRITICAL = "critical"
       WARNING = "warning"
       OK = "ok"
   ```
-- [ ] Define `Issue` dataclass/pydantic model:
+- [x] Define `Issue` dataclass/pydantic model:
   - `severity: Severity`
   - `title: str`
   - `detail: str`
   - `checker_name: str` — which checker produced this issue
   - `remediation: str | None = None` — actionable fix suggestion
   - `location: str | None = None` — e.g., "Page 2" or "Metadata"
-- [ ] Define `CheckerResult` model:
+- [x] Define `CheckerResult` model:
   - `checker_name: str`
   - `issues: list[Issue]`
   - `execution_time_ms: float`
-- [ ] Define `CheckReport` model (aggregate of all checks):
+- [x] Define `CheckReport` model (aggregate of all checks):
   - `pdf_path: Path`
   - `check_results: list[CheckerResult]`
   - `all_issues: list[Issue]` — computed property that flattens
@@ -102,9 +102,9 @@
   - `ok_count: int` — computed
   - `score: float | None = None` — populated by scoring module
   - `timestamp: datetime`
-- [ ] Define `CheckerConfig` model (base for checker-specific configs)
-- [ ] Add `__str__` and `__repr__` methods for all models
-- [ ] Add model validators (e.g., title must not be empty)
+- [x] Define `CheckerConfig` model (base for checker-specific configs)
+- [x] Add `__str__` and `__repr__` methods for all models
+- [x] Add model validators (e.g., title must not be empty)
 
 **Acceptance:** All models instantiate, validate, and serialize correctly. Type hints are complete.
 
