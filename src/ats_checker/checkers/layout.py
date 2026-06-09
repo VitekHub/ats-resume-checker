@@ -33,7 +33,7 @@ class LayoutChecker(BaseChecker):
                     detail="Unable to access PDF structure for layout analysis.",
                     checker_name=self.name,
                     remediation="Ensure the PDF is not corrupted or password-protected.",
-                    location="Entire file",
+                    location="Entire document",
                 )
             ]
 
@@ -105,7 +105,7 @@ class LayoutChecker(BaseChecker):
                     detail="Text appears in a single column — ATS will read it in order.",
                     checker_name=self.name,
                     remediation="",
-                    location="Entire file",
+                    location="Entire document",
                 )
             )
 

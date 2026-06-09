@@ -28,7 +28,7 @@ class FontsChecker(BaseChecker):
                     detail="No fonts were extracted from the document.",
                     checker_name=self.name,
                     remediation=None,
-                    location="Entire file",
+                    location="Entire document",
                 )
             ]
 
@@ -51,7 +51,7 @@ class FontsChecker(BaseChecker):
                     ),
                     checker_name=self.name,
                     remediation="Use standard fonts like Arial, Calibri, or Helvetica.",
-                    location="Entire file",
+                    location="Entire document",
                 )
             )
 
@@ -67,7 +67,7 @@ class FontsChecker(BaseChecker):
                     ),
                     checker_name=self.name,
                     remediation="Use standard fonts like Arial, Calibri, or Helvetica.",
-                    location="Entire file",
+                    location="Entire document",
                 )
             )
 
@@ -79,7 +79,7 @@ class FontsChecker(BaseChecker):
                     detail="All detected fonts are recognized as ATS-safe.",
                     checker_name=self.name,
                     remediation=None,
-                    location="Entire file",
+                    location="Entire document",
                 )
             )
 

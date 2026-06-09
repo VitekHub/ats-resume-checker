@@ -33,7 +33,7 @@ class FileSizeChecker(BaseChecker):
                     remediation=(
                         "Compress the PDF or remove high-resolution images to reduce file size."
                     ),
-                    location="Entire file",
+                    location="Entire document",
                 )
             ]
         elif size_kb > warning_kb:
@@ -46,7 +46,7 @@ class FileSizeChecker(BaseChecker):
                     remediation=(
                         "Consider optimizing the PDF size to ensure compatibility with all portals."
                     ),
-                    location="Entire file",
+                    location="Entire document",
                 )
             ]
 
@@ -57,6 +57,6 @@ class FileSizeChecker(BaseChecker):
                 detail=f"{size_kb:.0f} KB — file size is within acceptable limits",
                 checker_name=self.name,
                 remediation=None,
-                location="Entire file",
+                location="Entire document",
             )
         ]

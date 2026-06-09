@@ -72,7 +72,7 @@
   - Return `[Issue]` list
 - [x] All thresholds come from config, no hard-coded values
 - [x] Add `remediation` field to each Issue with actionable advice
-- [x] Add `location` field (e.g., `"Entire file"`)
+- [x] Add `location` field (e.g., `"Entire document"`)
 
 **Acceptance:** Running `FileSizeChecker(config).check(pdf)` produces the same logical results as the original `check_file_size()` for the same inputs.
 

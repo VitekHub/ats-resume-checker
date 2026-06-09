@@ -113,7 +113,7 @@
               "title": "File too large",
               "detail": "...",
               "remediation": "...",
-              "location": "Entire file"
+              "location": "Entire document"
             }
           ]
         }

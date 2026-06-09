@@ -51,7 +51,7 @@ class SectionsChecker(BaseChecker):
                     ),
                     checker_name=self.name,
                     remediation="Use standard section headers like Experience, Education, Skills.",
-                    location="Entire file",
+                    location="Entire document",
                 )
             ]
 
@@ -64,6 +64,6 @@ class SectionsChecker(BaseChecker):
                 detail=f"Detected: {found_list}",
                 checker_name=self.name,
                 remediation="",
-                location="Entire file",
+                location="Entire document",
             )
         ]
