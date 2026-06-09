@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Claude
+.claude/commands/*
+.claude/settings.local.json
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# PyInstaller
+#   Basically cloned from:
+#   https://github.com/pyinstaller/pyinstaller/blob/master/.gitignore
+#   https://github.com/pmnmap/pyinstaller-gitignore/blob/master/.gitignore
+#   https://github.com/akeছো/pyinstaller-gitignore/blob/master/.gitignore
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.pyproject
+.coverage.nocoverage
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log

@@ -49,6 +49,7 @@ The project currently exists as a single `ats_check.py` script (~520 lines). It 
 9. **Scoring system** — overall ATS compatibility score with breakdown
 10. **Batch processing** — check multiple resumes at once
 11. **Max 300 lines per file** — no source file should exceed 300 lines; if a file grows beyond that, split it into smaller, focused modules
+12. **Max 100 characters per line** — keep lines concise for better readability and maintainability (as enforced by Ruff)
 
 ## Implementation Phases
 
