@@ -7,7 +7,7 @@
 
 **Goal:** Create the `src/ats_checker/` package layout and `pyproject.toml`.
 
-- [ ] Create directory structure:
+- [x] Create directory structure:
   ```
   src/ats_checker/
   ├── __init__.py
@@ -23,9 +23,9 @@
   └── reporters/
       └── __init__.py
   ```
-- [ ] Create `tests/` directory structure mirroring `src/ats_checker/`
-- [ ] Create `tests/fixtures/` directory for test PDFs
-- [ ] Create empty `__init__.py` files in every package
+- [x] Create `tests/` directory structure mirroring `src/ats_checker/`
+- [x] Create `tests/fixtures/` directory for test PDFs
+- [x] Create empty `__init__.py` files in every package
 
 **Acceptance:** `python -c "import ats_checker"` succeeds (even if empty).
 
@@ -35,37 +35,37 @@
 
 **Goal:** Set up modern Python packaging with all dependencies and tool configs.
 
-- [ ] Set project metadata:
+- [x] Set project metadata:
   - Name: `ats-resume-checker`
   - Version: `0.1.0`
   - Python requirement: `>=3.11`
   - Description, authors, license, README path
-- [ ] Declare core dependencies:
+- [x] Declare core dependencies:
   - `pdfplumber>=0.10`
   - `PyMuPDF>=1.23`
   - `typer>=0.9` (with `all` extra for Rich)
   - `rich>=13`
   - `pydantic>=2`
   - `pydantic-settings>=2`
-- [ ] Declare dev dependencies as optional group:
+- [x] Declare dev dependencies as optional group:
   - `pytest>=7`
   - `pytest-cov>=4`
   - `pytest-mock>=3`
   - `mypy>=1.5`
   - `ruff>=0.1`
-- [ ] Configure build system (hatchling or setuptools)
-- [ ] Add CLI entry point: `ats-check = "ats_checker.cli:app"`
-- [ ] Configure Ruff in `[tool.ruff]`:
+- [x] Configure build system (hatchling or setuptools)
+- [x] Add CLI entry point: `ats-check = "ats_checker.cli:app"`
+- [x] Configure Ruff in `[tool.ruff]`:
   - Line length: 100
   - Target Python 3.11+
   - Enable isort rules
-- [ ] Configure mypy in `[tool.mypy]`:
+- [x] Configure mypy in `[tool.mypy]`:
   - Strict mode
   - Warn on unused ignores
-- [ ] Configure pytest in `[tool.pytest.ini_options]`:
+- [x] Configure pytest in `[tool.pytest.ini_options]`:
   - testpaths = `tests`
   - Source root mapping
-- [ ] Add `[project.scripts]` entry point for CLI
+- [x] Add `[project.scripts]` entry point for CLI
 
 **Acceptance:** `pip install -e ".[dev]"` succeeds and `ats-check --help` runs (even if minimal).
 
