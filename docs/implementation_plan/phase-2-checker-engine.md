@@ -102,18 +102,18 @@
 
 **Goal:** Port `check_text_extraction()` to the new architecture.
 
-- [ ] Create `TextExtractionChecker(BaseChecker)`:
+- [x] Create `TextExtractionChecker(BaseChecker)`:
   - `name = "text_extraction"`
   - `description = "Verifies text can be cleanly extracted in reading order"`
   - `requires_text = True`
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Use pre-loaded text from `PDFDocument`
   - Check `text_length < config.min_text_length` → CRITICAL
   - Check `alpha_ratio < config.warning_alpha_ratio` → CRITICAL or WARNING
   - Check `alpha_ratio < config.min_alpha_ratio` → WARNING
   - Otherwise → OK
   - Remove the side effect of writing `.extracted.txt` (that's a reporter concern)
-- [ ] Add `remediation` with advice about using text-based PDFs, avoiding scanned images
+- [x] Add `remediation` with advice about using text-based PDFs, avoiding scanned images
 
 **Acceptance:** Produces equivalent severity results. No file I/O side effects.
 

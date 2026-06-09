@@ -21,8 +21,8 @@ class ImagesChecker(BaseChecker):
             return [
                 Issue(
                     severity=Severity.OK,
-                    message="No embedded images detected. The document is clean of "
-                            "potential image-based parsing barriers.",
+                    title="No embedded images detected",
+                    detail="The document is clean of potential image-based parsing barriers.",
                     remediation=None,
                     location="Entire file",
                     checker_name=self.name,
@@ -40,8 +40,8 @@ class ImagesChecker(BaseChecker):
             issues.append(
                 Issue(
                     severity=Severity.CRITICAL,
-                    message="Large embedded image(s) detected. ATS may fail to parse the "
-                            "surrounding text or ignore the file.",
+                    title="Large embedded image(s) detected",
+                    detail="ATS may fail to parse the surrounding text or ignore the file.",
                     remediation="Remove portrait photos, large graphics, or scanned "
                                 "elements. Convert to plain text if necessary.",
                     location=location,
@@ -55,8 +55,9 @@ class ImagesChecker(BaseChecker):
             issues.append(
                 Issue(
                     severity=Severity.WARNING,
-                    message="Small embedded images/icons detected. While usually ignored, "
-                            "excessive use of symbols can sometimes confuse simpler ATS parsers.",
+                    title="Small embedded images/icons detected",
+                    detail="While usually ignored, excessive use of symbols can sometimes "
+                            "confuse simpler ATS parsers.",
                     remediation="Replace complex icons with standard bullet points or "
                                 "text labels.",
                     location=location,
