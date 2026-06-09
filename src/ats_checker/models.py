@@ -102,3 +102,23 @@ class CheckerConfig(BaseModel):
     """
 
     pass
+
+
+class ImageInfo(BaseModel):
+    """
+    Metadata for an image found in a PDF document.
+    """
+
+    page: int
+    xref: int
+    width: int
+    height: int
+    is_large: bool
+
+    @field_validator("width", "height")
+    @classmethod
+    def must_be_positive(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError("Dimension must be positive")
+        return v
+

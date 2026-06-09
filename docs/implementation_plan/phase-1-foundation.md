@@ -153,28 +153,28 @@
 
 **Goal:** Centralize PDF loading, text extraction, and shared helpers.
 
-- [ ] Create `PDFDocument` wrapper class:
+- [x] Create `PDFDocument` wrapper class:
   - Constructor takes `Path`, loads both pdfplumber and PyMuPDF documents
   - Implements context manager (`__enter__`/`__exit__`) for resource cleanup
   - Caches text extraction results per page
   - Properties: `page_count`, `file_size_kb`, `metadata`
-- [ ] Create `extract_text(pdf: PDFDocument) -> str`:
+- [x] Create `extract_text(pdf: PDFDocument) -> str`:
   - Extracts all text from all pages using pdfplumber
   - Returns concatenated text with page breaks
-- [ ] Create `extract_words(pdf: PDFDocument) -> list[dict]`:
+- [x] Create `extract_words(pdf: PDFDocument) -> list[dict]`:
   - Extracts word-level data with position info
   - Returns list of `{"text": ..., "x0": ..., "x1": ..., "top": ..., "bottom": ...}`
-- [ ] Create `extract_images_info(pdf: PDFDocument) -> list[ImageInfo]`:
+- [x] Create `extract_images_info(pdf: PDFDocument) -> list[ImageInfo]`:
   - Returns structured image data (dimensions, page, xref)
   - Includes helper to classify image as large/small
-- [ ] Create `extract_font_info(pdf: PDFDocument) -> set[str]`:
+- [x] Create `extract_font_info(pdf: PDFDocument) -> set[str]`:
   - Returns normalized set of font names found in the document
-- [ ] Add proper error handling:
+- [x] Add proper error handling:
   - `PDFCorruptedError` for unreadable files
   - `PDFPasswordError` for password-protected files
   - `ExtractionError` for general failures
-- [ ] Add type hints throughout
-- [ ] No side effects (no writing `.extracted.txt` — that's a reporter concern)
+- [x] Add type hints throughout
+- [x] No side effects (no writing `.extracted.txt` — that's a reporter concern)
 
 **Acceptance:** `PDFDocument` can open a test PDF and provide text, images, fonts, metadata without leaking resources.
 
