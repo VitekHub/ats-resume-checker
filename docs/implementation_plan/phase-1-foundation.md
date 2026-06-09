@@ -184,13 +184,13 @@
 
 **Goal:** Define the public API surface.
 
-- [ ] In `src/ats_checker/__init__.py`:
+- [x] In `src/ats_checker/__init__.py`:
   - Export `Config`, `CheckReport`, `Issue`, `Severity`, `CheckerResult`
   - Export `run_check()` function (will be implemented in Phase 2)
   - Define `__version__`
-- [ ] In `src/ats_checker/checkers/__init__.py`:
+- [x] In `src/ats_checker/checkers/__init__.py`:
   - Export `BaseChecker`, `CheckerRegistry`
-- [ ] In `src/ats_checker/reporters/__init__.py`:
+- [x] In `src/ats_checker/reporters/__init__.py`:
   - Export `BaseReporter`, `get_reporter()`
 
 **Acceptance:** `from ats_checker import CheckReport, Issue, Severity` works.
