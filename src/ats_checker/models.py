@@ -64,28 +64,28 @@ class CheckReport(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
 
     @computed_field
-    @property
     def all_issues(self) -> list[Issue]:
         """Flattened list of all issues across all checkers."""
+        return self._get_all_issues()
+
+    def _get_all_issues(self) -> list[Issue]:
+        """Internal helper to flatten issues."""
         return [issue for result in self.check_results for issue in result.issues]
 
     @computed_field
-    @property
     def critical_count(self) -> int:
         """Count of critical issues."""
-        return sum(1 for issue in self.all_issues if issue.severity == Severity.CRITICAL)
+        return sum(1 for issue in self._get_all_issues() if issue.severity == Severity.CRITICAL)
 
     @computed_field
-    @property
     def warning_count(self) -> int:
         """Count of warning issues."""
-        return sum(1 for issue in self.all_issues if issue.severity == Severity.WARNING)
+        return sum(1 for issue in self._get_all_issues() if issue.severity == Severity.WARNING)
 
     @computed_field
-    @property
     def ok_count(self) -> int:
         """Count of OK status indicators."""
-        return sum(1 for issue in self.all_issues if issue.severity == Severity.OK)
+        return sum(1 for issue in self._get_all_issues() if issue.severity == Severity.OK)
 
     def __repr__(self) -> str:
         return (

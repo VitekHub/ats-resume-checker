@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import fitz  # PyMuPDF
 import pdfplumber
 
-from src.ats_checker.config import Config
-from src.ats_checker.models import ImageInfo
+from ats_checker.config import Config
+from ats_checker.models import ImageInfo
 
 
 class PDFError(Exception):
@@ -34,7 +34,7 @@ class PDFDocument:
 
     def __init__(self, path: Path) -> None:
         self.path = path
-        self._pdfplumber_doc: pdfplumber.PDF | None = None
+        self._pdfplumber_doc: Any | None = None
         self._fitz_doc: fitz.Document | None = None
         self._text_cache: dict[int, str] = {}
 
@@ -76,11 +76,11 @@ class PDFDocument:
         return self.path.stat().st_size / 1024
 
     @property
-    def metadata(self) -> dict[str, str]:
+    def metadata(self) -> dict[str, Any]:
         """Return the PDF metadata."""
         if self._fitz_doc is None:
             raise ExtractionError("PDF document is not open")
-        return self._fitz_doc.metadata
+        return cast(dict[str, Any], self._fitz_doc.metadata)
 
     def get_page_text(self, page_index: int) -> str:
         """

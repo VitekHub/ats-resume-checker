@@ -1,0 +1,14 @@
+# Core Dependencies
+pdfplumber>=0.10
+pymupdf>=1.23
+typer[all]>=0.9
+rich>=13
+pydantic>=2.0
+pydantic-settings>=2.0
+
+# Development Dependencies
+pytest>=7.0
+pytest-cov>=4.0
+pytest-mock>=3.0
+mypy>=1.5
+ruff>=0.1

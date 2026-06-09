@@ -201,14 +201,14 @@
 
 **Goal:** Ensure every developer can get started with one command.
 
-- [ ] Create `.gitignore` (Python, IDE, build artifacts, `__pycache__`, `.egg-info`, `dist/`, `.mypy_cache/`, `.pytest_cache/`)
-- [ ] Create `requirements.txt` as a convenience (generated from `pyproject.toml`)
-- [ ] Create `.python-version` pinning to 3.11+
-- [ ] Verify `pip install -e ".[dev]"` installs everything
-- [ ] Verify `python -m ats_checker` runs without error
-- [ ] Verify `pytest` discovers tests (even if none exist yet)
-- [ ] Verify `ruff check src/` passes on existing files
-- [ ] Verify `mypy src/` passes on existing files
+- [x] Create `.gitignore` (Python, IDE, build artifacts, `__pycache__`, `.egg-info`, `dist/`, `.mypy_cache/`, `.pytest_cache/`)
+- [x] Create `requirements.txt` as a convenience (generated from `pyproject.toml`)
+- [x] Create `.python-version` pinning to 3.11+
+- [x] Verify `pip install -e ".[dev]"` installs everything
+- [x] Verify `python -m ats_checker` runs without error
+- [x] Verify `pytest` discovers tests (even if none exist yet)
+- [x] Verify `ruff check src/` passes on existing files
+- [x] Verify `mypy src/` passes on existing files
 
 **Acceptance:** Fresh clone → `pip install -e ".[dev]"` → all tools run cleanly.
 
