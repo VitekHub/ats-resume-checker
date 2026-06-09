@@ -82,17 +82,17 @@
 
 **Goal:** Port `check_images()` to the new architecture.
 
-- [ ] Create `ImagesChecker(BaseChecker)`:
+- [x] Create `ImagesChecker(BaseChecker)`:
   - `name = "images"`
   - `description = "Detects embedded images that ATS cannot read"`
   - `requires_text = False`
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Use `PDFDocument` image extraction helpers
   - Classify images as large (> `config.large_image_px`) or small
   - Return Issues for large images (CRITICAL), small images (WARNING)
   - Return OK Issue if no images found
-- [ ] Add `remediation` to each Issue (e.g., "Remove portrait photo or convert to plain text")
-- [ ] Add `location` (e.g., "Page 2")
+- [x] Add `remediation` to each Issue (e.g., "Remove portrait photo or convert to plain text")
+- [x] Add `location` (e.g., "Page 2")
 
 **Acceptance:** Produces equivalent results to original `check_images()`, but via `PDFDocument` API.
 
