@@ -141,6 +141,7 @@ class OutputConfig(BaseModel):
     format: str = "terminal"
     color_output: bool = True
     verbose: bool = False
+    compact: bool = False
 
 
 class UnicodeConfig(BaseModel):

@@ -8,7 +8,7 @@
 
 **Goal:** Define the reporter contract.
 
-- [ ] Create `BaseReporter` abstract class:
+- [x] Create `BaseReporter` abstract class:
   ```python
   class BaseReporter(ABC):
       format_name: str  # e.g. "terminal", "json", "html"
@@ -27,7 +27,7 @@
           """
           ...
   ```
-- [ ] Add `report_to_console(self, result: CheckReport) -> None` default method:
+- [x] Add `report_to_console(self, result: CheckReport) -> None` default method:
   - Calls `self.report(result)` and prints to stdout
   - Subclasses can override for special console handling (e.g., Rich live output)
 
@@ -39,13 +39,13 @@
 
 **Goal:** Create a factory to get the right reporter by name.
 
-- [ ] Create `get_reporter(format_name: str) -> BaseReporter`:
+- [x] Create `get_reporter(format_name: str) -> BaseReporter`:
   - `"terminal"` → `TerminalReporter`
   - `"json"` → `JSONReporter`
   - `"html"` → `HTMLReporter`
   - Raise `ValueError` for unknown formats
-- [ ] Create `list_formats() -> list[str]` — returns `["terminal", "json", "html"]`
-- [ ] Register reporters via import (no manual mapping — each reporter registers itself)
+- [x] Create `list_formats() -> list[str]` — returns `["terminal", "json", "html"]`
+- [x] Register reporters via import (no manual mapping — each reporter registers itself)
 
 **Acceptance:** `get_reporter("json")` returns a `JSONReporter` instance.
 
@@ -55,9 +55,9 @@
 
 **Goal:** Rebuild the colored terminal output using Rich instead of raw ANSI codes.
 
-- [ ] Create `TerminalReporter(BaseReporter)`:
+- [x] Create `TerminalReporter(BaseReporter)`:
   - `format_name = "terminal"`
-- [ ] Implement `report()`:
+- [x] Implement `report()`:
   - Build a Rich `Table` for the summary header (file name, date, score)
   - Group issues by severity: CRITICAL (red), WARNING (yellow), OK (green)
   - Each Issue renders as a `rich.panel.Panel` or table row with:
@@ -71,14 +71,14 @@
     - CRITICAL issues → "✗ NOT ATS-FRIENDLY" in red
     - Only warnings → "⚠ LIKELY ATS-COMPATIBLE" in yellow
     - All OK → "✓ ATS-FRIENDLY" in green
-- [ ] Implement `report_to_console()`:
+- [x] Implement `report_to_console()`:
   - Use `rich.console.Console` for actual terminal output
   - Detect terminal color support; fall back gracefully if no color
-- [ ] Add `--no-color` support via config (`config.color_output`)
-- [ ] Add `--verbose` mode via config:
+- [x] Add `--no-color` support via config (`config.color_output`)
+- [x] Add `--verbose` mode via config:
   - Normal: show only CRITICAL and WARNING
   - Verbose: show all including OK
-- [ ] Add progress bar during check using `rich.progress`
+- [ ] Add progress bar during check using `rich.progress` (Note: Moved to Engine/CLI concern as reporters process the final report)
 
 **Acceptance:** Output is visually equivalent to the original ANSI-based report but uses Rich for better rendering (tables, panels, proper width handling). Falls back gracefully in non-TTY environments.
 
@@ -132,9 +132,9 @@
 
 **Goal:** Produce a self-contained HTML report that can be shared or archived.
 
-- [ ] Create `HTMLReporter(BaseReporter)`:
+- [x] Create `HTMLReporter(BaseReporter)`:
   - `format_name = "html"`
-- [ ] Implement `report()`:
+- [x] Implement `report()`:
   - Generate a self-contained HTML file with embedded CSS (no external dependencies)
   - Use semantic HTML structure:
     - `<header>` with file name and timestamp
@@ -145,8 +145,8 @@
   - Print-friendly CSS: `@media print` rules
   - Color scheme matching terminal output (red/yellow/green severity)
   - Include a "Exported from ATS Resume Checker" footer with version
-- [ ] Use Python's built-in `html` module for escaping (security: prevent XSS from PDF content)
-- [ ] Write to file if `output` path is provided
+- [x] Use Python's built-in `html` module for escaping (security: prevent XSS from PDF content)
+- [x] Write to file if `output` path is provided
 
 **Acceptance:** HTML report opens in a browser, is readable, and looks professional. No external CSS/JS dependencies.
 
@@ -156,11 +156,11 @@
 
 **Goal:** Move the `.extracted.txt` sidecar generation from the checker to a reporter concern.
 
-- [ ] Create `save_extracted_text(result: CheckReport, pdf_path: Path) -> Path`:
+- [x] Create `save_extracted_text(result: CheckReport, pdf_path: Path) -> Path`:
   - Writes `CheckReport.all_text` (from text extraction checker) to `{stem}.extracted.txt`
   - Only writes if text extraction checker ran and found text
   - This is not a full reporter class — it's a utility called by the terminal reporter
-- [ ] Add `--save-text` CLI flag (deferred to Phase 4, but add the function now)
+- [x] Add `--save-text` CLI flag (deferred to Phase 4, but add the function now)
 
 **Acceptance:** Calling `save_extracted_text()` creates the sidecar file matching original behavior.
 

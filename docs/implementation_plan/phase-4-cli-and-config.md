@@ -62,6 +62,7 @@
   - Unknown checker names → error with list of valid names
 - [ ] Load config (merge defaults → file → env vars → CLI flags)
 - [ ] Run check via `run_check()`
+- [ ] Implement progress bar during check using `rich.progress` in the CLI/Engine loop
 - [ ] Report via appropriate reporter
 - [ ] Handle `KeyboardInterrupt` gracefully (print "Aborted.")
 - [ ] Exit code: 0 if no critical issues, 1 if critical issues, 2 for errors

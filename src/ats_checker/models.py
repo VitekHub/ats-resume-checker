@@ -61,6 +61,7 @@ class CheckReport(BaseModel):
     pdf_path: Path
     check_results: list[CheckerResult]
     score: float | None = Field(default=None, description="Overall ATS compatibility score")
+    all_text: str | None = Field(default=None, description="Full text extracted from the PDF")
     timestamp: datetime = Field(default_factory=datetime.now)
 
     @computed_field
