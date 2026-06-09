@@ -180,18 +180,18 @@
 
 **Goal:** Port `check_fonts()` to the new architecture.
 
-- [ ] Create `FontsChecker(BaseChecker)`:
+- [x] Create `FontsChecker(BaseChecker)`:
   - `name = "fonts"`
   - `description = "Checks for non-standard or symbol fonts that ATS may not render"`
   - `requires_text = False`
-- [ ] Implement `check()`:
+- [x] Implement `check()`:
   - Use `PDFDocument` font extraction
   - Compare against `config.safe_fonts` and `config.symbol_fonts`
   - Normalize font names (strip hyphens, spaces, underscores, lowercase)
   - Symbol fonts → CRITICAL
   - Unusual fonts → WARNING (with count)
   - All safe → OK
-- [ ] Add `remediation`: "Use standard fonts like Arial, Calibri, or Helvetica."
+- [x] Add `remediation`: "Use standard fonts like Arial, Calibri, or Helvetica."
 
 **Acceptance:** Font detection matches original logic. Config-driven safe/symbol font lists.
 
