@@ -8,7 +8,7 @@
 
 **Goal:** Define the contract every checker must follow.
 
-- [ ] Create `BaseChecker` abstract class:
+- [x] Create `BaseChecker` abstract class:
   ```python
   class BaseChecker(ABC):
       name: str                    # unique identifier, e.g. "file_size"
@@ -23,12 +23,12 @@
           """Run this checker against the PDF and return any issues found."""
           ...
   ```
-- [ ] Add `__repr__` returning `f"<{self.__class__.__name__} name={self.name}>"`
-- [ ] Add `__str__` returning `self.name`
-- [ ] Add a class-level `requires_text: bool = True` flag — if `True`, the engine
+- [x] Add `__repr__` returning `f"<{self.__class__.__name__} name={self.name}>"`
+- [x] Add `__str__` returning `self.name`
+- [x] Add a class-level `requires_text: bool = True` flag — if `True`, the engine
       pre-loads extracted text before calling `check()`. Checkers that don't need
       text (e.g., file_size) can set `requires_text = False` to skip extraction.
-- [ ] Ensure all abstract methods have docstrings explaining parameters and return type
+- [x] Ensure all abstract methods have docstrings explaining parameters and return type
 
 **Acceptance:** `BaseChecker` cannot be instantiated; subclasses that implement `check()` can.
 
