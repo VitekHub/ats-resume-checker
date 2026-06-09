@@ -162,16 +162,15 @@
 
 **Goal:** Extract contact info detection from the original `check_sections()` into its own checker.
 
-- [ ] Create `ContactInfoChecker(BaseChecker)`:
+- [x] Create `ContactInfoChecker(BaseChecker)`:
   - `name = "contact_info"`
   - `description = "Detects email and phone number in the resume text"`
   - `requires_text = True`
-- [ ] Implement `check()`:
-  - Use `config.email_pattern` and `config.phone_patterns` for detection
+- [x] Implement `check()`:
   - Missing email → CRITICAL
   - Missing phone → WARNING
   - Both present → OK
-- [ ] Add `remediation`: "Add your email as plain text, not in an image or special font."
+- [x] Add `remediation`: "Add your email as plain text, not in an image or special font."
 
 **Acceptance:** Email and phone detection matches original logic, but patterns are configurable.
 
