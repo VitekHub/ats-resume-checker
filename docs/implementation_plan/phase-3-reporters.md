@@ -8,7 +8,7 @@
 
 **Goal:** Define the reporter contract.
 
-- [ ] Create `BaseReporter` abstract class:
+- [x] Create `BaseReporter` abstract class:
   ```python
   class BaseReporter(ABC):
       format_name: str  # e.g. "terminal", "json", "html"
@@ -27,7 +27,7 @@
           """
           ...
   ```
-- [ ] Add `report_to_console(self, result: CheckReport) -> None` default method:
+- [x] Add `report_to_console(self, result: CheckReport) -> None` default method:
   - Calls `self.report(result)` and prints to stdout
   - Subclasses can override for special console handling (e.g., Rich live output)
 

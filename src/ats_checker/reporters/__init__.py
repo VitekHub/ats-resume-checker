@@ -1,3 +1,3 @@
-from .base import BaseReporter, get_reporter
+from .base import BaseReporter
 
-__all__ = ["BaseReporter", "get_reporter"]
+__all__ = ["BaseReporter"]
