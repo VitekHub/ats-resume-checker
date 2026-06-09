@@ -1,7 +1,7 @@
-from src.ats_checker.checkers.base import BaseChecker
-from src.ats_checker.checkers.registry import register_checker
-from src.ats_checker.models import Issue, Severity
-from src.ats_checker.pdf_utils import PDFDocument, extract_images_info
+from ats_checker.checkers.base import BaseChecker
+from ats_checker.checkers.registry import register_checker
+from ats_checker.models import Issue, Severity
+from ats_checker.pdf_utils import PDFDocument, extract_images_info
 
 
 @register_checker
