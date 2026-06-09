@@ -243,7 +243,7 @@
 
 **Goal:** Create the orchestrator that runs all checkers and produces a `CheckReport`.
 
-- [ ] Create `run_check()` function:
+- [x] Create `run_check()` function:
   ```python
   def run_check(
       pdf_path: Path,
@@ -252,7 +252,7 @@
       skip_checkers: list[str] | None = None,
   ) -> CheckReport:
   ```
-- [ ] Implementation:
+- [x] Implementation:
   1. Load config (use defaults if `None`)
   2. Resolve checkers from registry (filter by `checkers`/`skip_checkers`)
   3. Open `PDFDocument` (with context manager)
@@ -260,11 +260,11 @@
   5. Measure execution time per checker
   6. Assemble `CheckReport`
   7. Return result (no I/O — reporters handle output)
-- [ ] Add error handling:
+- [x] Add error handling:
   - If a checker raises an exception, catch it, log warning, and continue
   - Record the error as a CRITICAL Issue in the `CheckerResult`
   - Never let one checker crash the whole check
-- [ ] Pre-load text extraction if any checker has `requires_text = True`
+- [x] Pre-load text extraction if any checker has `requires_text = True`
 
 **Acceptance:** `run_check(Path("resume.pdf"))` returns a complete `CheckReport` with all checker results.
 
