@@ -4,6 +4,7 @@ from typing import List, Optional
 import typer
 from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
+from rich.table import Table
 
 from ats_checker.checkers.registry import CheckerRegistry
 from ats_checker.config import Config
@@ -157,6 +158,24 @@ def check(
     if has_critical:
         raise typer.Exit(code=1)
     raise typer.Exit(code=0)
+
+
+@app.command("list-checkers")
+def list_checkers() -> None:
+    """List all available checker modules and their descriptions."""
+    checkers = CheckerRegistry.get_all()
+    if not checkers:
+        console.print("[yellow]No checkers are currently registered.[/yellow]")
+        return
+
+    table = Table(title="Available ATS Checkers")
+    table.add_column("Name", style="cyan", no_wrap=True)
+    table.add_column("Description", style="white")
+
+    for checker_cls in sorted(checkers, key=lambda x: x.name):
+        table.add_row(checker_cls.name, checker_cls.description)
+
+    console.print(table)
 
 
 if __name__ == "__main__":

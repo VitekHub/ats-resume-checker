@@ -75,13 +75,13 @@
 
 **Goal:** Add a command to list available checkers.
 
-- [ ] Create `list-checkers` command:
+- [x] Create `list-checkers` command:
   ```python
   @app.command("list-checkers")
   def list_checkers() -> None:
       """List all available checker modules and their descriptions."""
   ```
-- [ ] Output a Rich table:
+- [x] Output a Rich table:
   ```
   Name              Description
   ─────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@
   text_extraction   Verifies text can be cleanly extracted
   ...
   ```
-- [ ] This helps users know valid values for `--checker` and `--skip-checker`
+- [x] This helps users know valid values for `--checker` and `--skip-checker`
 
 **Acceptance:** `ats-check list-checkers` prints all registered checkers.
 
