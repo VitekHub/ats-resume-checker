@@ -140,8 +140,9 @@ class OutputConfig(BaseModel):
 
     format: str = "terminal"
     color_output: bool = True
-    verbose: bool = False
+    verbose: bool = True
     compact: bool = False
+    report_filename_suffix: str = "-ats-report"
 
 
 class UnicodeConfig(BaseModel):

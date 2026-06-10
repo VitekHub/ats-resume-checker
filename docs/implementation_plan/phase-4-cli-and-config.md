@@ -7,11 +7,11 @@
 
 **Goal:** Create the Typer CLI app with the main `check` command.
 
-- [ ] Create `app = typer.Typer()` with:
+- [x] Create `app = typer.Typer()` with:
   - Name: `ats-check`
   - Help text: "Check PDF resumes for ATS compatibility issues"
   - Rich markup enabled
-- [ ] Create `check` command:
+- [x] Create `check` command:
   ```python
   @app.command()
   def check(
@@ -56,16 +56,16 @@
       ),
   ) -> None:
   ```
-- [ ] Validate inputs:
+- [x] Validate inputs:
   - Each path must be a `.pdf` file
   - If `format` is `json` or `html` and `output` is None and multiple paths given → error
   - Unknown checker names → error with list of valid names
-- [ ] Load config (merge defaults → file → env vars → CLI flags)
-- [ ] Run check via `run_check()`
-- [ ] Implement progress bar during check using `rich.progress` in the CLI/Engine loop
-- [ ] Report via appropriate reporter
-- [ ] Handle `KeyboardInterrupt` gracefully (print "Aborted.")
-- [ ] Exit code: 0 if no critical issues, 1 if critical issues, 2 for errors
+- [x] Load config (merge defaults → file → env vars → CLI flags)
+- [x] Run check via `run_check()`
+- [x] Implement progress bar during check using `rich.progress` in the CLI/Engine loop
+- [x] Report via appropriate reporter
+- [x] Handle `KeyboardInterrupt` gracefully (print "Aborted.")
+- [x] Exit code: 0 if no critical issues, 1 if critical issues, 2 for errors
 
 **Acceptance:** `ats-check check resume.pdf` runs all checks and prints a terminal report. `ats-check check resume.pdf --format json -o report.json` writes JSON.
 

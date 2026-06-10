@@ -104,7 +104,7 @@ class PDFDocument:
             self._text_cache[page_index] = text
             return text
         except Exception as e:
-            raise ExtractionError(f"Failed to extract text from page {page_index}: {e}") from e
+            raise ExtractionError(f"Failed to extract text from page {page_index + 1}: {e}") from e
 
 
 def extract_text(pdf: PDFDocument) -> str:
@@ -169,7 +169,8 @@ def extract_images_info(pdf: PDFDocument, config: Config) -> list[ImageInfo]:
                 height = pix.height
 
                 is_large = (
-                    width >= config.images.large_width_px or height >= config.images.large_height_px
+                    width >= config.images.large_width_px
+                    and height >= config.images.large_height_px
                 )
 
                 images_info.append(
@@ -198,11 +199,14 @@ def extract_font_info(pdf: PDFDocument) -> set[str]:
     try:
         for page_index in range(pdf.page_count):
             page = pdf._fitz_doc[page_index]
-            for font in page.get_fonts():
-                # Normalize font names to lowercase and strip spaces
-                font_name = font[3] if len(font) > 3 else font[0]
-                name = font_name.lower().replace(" ", "")
-                fonts.add(name)
+            for block in page.get_text("dict")["blocks"]:
+                if block["type"] == 0:  # text block
+                    for line in block.get("lines", []):
+                        for span in line.get("spans", []):
+                            font_name = span.get("font", "")
+                            if font_name:
+                                name = font_name.lower().replace(" ", "")
+                                fonts.add(name)
     except Exception as e:
         raise ExtractionError(f"Failed to extract font information: {e}") from e
 

@@ -35,13 +35,14 @@ class ImagesChecker(BaseChecker):
         issues: list[Issue] = []
 
         if large_images:
-            pages = sorted(list({img.page + 1 for img in large_images}))
+            pages = sorted(list({img.page for img in large_images}))
             location = f"Page(s): {', '.join(map(str, pages))}"
             issues.append(
                 Issue(
                     severity=Severity.CRITICAL,
                     title="Large embedded image(s) detected",
-                    detail="ATS may fail to parse the surrounding text or ignore the file.",
+                    detail=f"Found {len(large_images)} large images. "
+                    "ATS may fail to parse the surrounding text or ignore the file.",
                     remediation="Remove portrait photos, large graphics, or scanned "
                     "elements. Convert to plain text if necessary.",
                     location=location,
@@ -49,14 +50,15 @@ class ImagesChecker(BaseChecker):
                 )
             )
 
-        elif small_images:
-            pages = sorted(list({img.page + 1 for img in small_images}))
+        if small_images:
+            pages = sorted(list({img.page for img in small_images}))
             location = f"Page(s): {', '.join(map(str, pages))}"
             issues.append(
                 Issue(
                     severity=Severity.WARNING,
                     title="Small embedded images/icons detected",
-                    detail="While usually ignored, excessive use of symbols can sometimes "
+                    detail=f"Found {len(small_images)} small images. "
+                    "While usually ignored, excessive use of symbols can sometimes "
                     "confuse simpler ATS parsers.",
                     remediation="Replace complex icons with standard bullet points or text labels.",
                     location=location,

@@ -57,7 +57,7 @@ def check(
     ),
     config_file: Optional[Path] = typer.Option(None, "--config", help="Path to configuration file"),
     verbose: bool = typer.Option(
-        False, "--verbose", "-v", help="Show all checks including passing ones"
+        True, "--verbose", "-v", help="Show all checks including passing ones"
     ),
     no_color: bool = typer.Option(False, "--no-color", help="Disable colored output"),
     save_text: bool = typer.Option(
@@ -73,13 +73,6 @@ def check(
         if path.suffix.lower() != ".pdf":
             console.print(f"[red]Error:[/red] File [bold]{path.name}[/bold] is not a PDF.")
             raise typer.Exit(code=2)
-
-    if format in ("json", "html") and output is None and len(paths) > 1:
-        console.print(
-            f"[red]Error:[/red] Output path is required for [bold]{format}[/bold] "
-            "format when checking multiple files."
-        )
-        raise typer.Exit(code=2)
 
     validate_checkers(checker, skip_checker)
 
@@ -149,7 +142,16 @@ def check(
             # For non-terminal, output is handled by reporter.report()
             # In batch mode with a single output path, this might overwrite.
             # Phase 4.4 will improve this.
-            reporter.report(report, output=output)
+            # Determine output path: use provided path or default to <pdf_name><suffix>.<format>
+            suffix = config.output.report_filename_suffix
+            if output is not None:
+                final_output = output
+            else:
+                filename = f"{report.pdf_path.stem}{suffix}.{format}"
+                final_output = report.pdf_path.with_name(filename)
+
+            reporter.report(report, output=final_output)
+            console.print(f"[green]Report saved to:[/green] [bold]{final_output.absolute()}[/bold]")
 
     # 5. Exit
     if has_critical:

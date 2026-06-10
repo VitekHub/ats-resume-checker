@@ -6,7 +6,7 @@ Reporter registry and factory for ats_checker.
 from . import (
     html_reporter,  # noqa: F401
     json_reporter,  # noqa: F401
-    terminal,  # noqa: F401
+    terminal_reporter,  # noqa: F401
 )
 from .base import _REPORTERS, BaseReporter, register_reporter
 

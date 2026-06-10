@@ -2,6 +2,7 @@ import io
 from pathlib import Path
 from typing import Dict, List
 
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -68,8 +69,9 @@ class TerminalReporter(BaseReporter):
             if not issues:
                 continue
 
+            title_label = "Passed" if sev == Severity.OK else f"{sev.value.title()} Issues"
             sev_title = Text(
-                f"{_SEVERITY_ICON[sev]} {sev.value.title()} Issues",
+                f"{_SEVERITY_ICON[sev]} {title_label} ({len(issues)})",
                 style=f"bold {_SEVERITY_CLR[sev]}",
             )
             console.print(sev_title)
@@ -77,22 +79,20 @@ class TerminalReporter(BaseReporter):
             sev_table = Table(
                 show_header=True,
                 header_style="bold",
-                box=None,
+                box=box.SIMPLE_HEAD,
                 padding=(0, 2),
             )
-            sev_table.add_column("Checker", style="cyan", width=20)
-            sev_table.add_column("Issue", style="bold")
+            sev_table.add_column("Location", style="magenta", width=20)
+            sev_table.add_column("Issue", style="bold", width=25)
             sev_table.add_column("Detail", style="dim")
-            sev_table.add_column("Location", style="magenta")
             sev_table.add_column("Remediation", style="italic")
 
             for i in issues:
                 sev_table.add_row(
-                    i.checker_name,
-                    i.title,
-                    i.detail,
-                    i.location or "-",
-                    i.remediation or "-",
+                    f"\n{i.location or '-'}",
+                    f"\n{i.title}",
+                    f"\n{i.detail}",
+                    f"\n{i.remediation or '-'}",
                 )
 
             console.print(Panel(sev_table, border_style=_SEVERITY_CLR[sev]))
