@@ -9,7 +9,7 @@ from rich.table import Table
 from rich.text import Text
 
 from ..config import Config
-from ..models import CheckReport, Severity
+from ..models import BatchReport, CheckReport, Severity
 from .base import BaseReporter, register_reporter
 
 # Mapping from Severity to rich color and icon
@@ -103,7 +103,7 @@ class TerminalReporter(BaseReporter):
             verdict = "✗ NOT ATS-FRIENDLY"
             verdict_style = "bold red"
         elif result.warning_count > 0:
-            verdict = "⚠ LIKELY ATS-COMPATIBLE"
+            verdict = "⚠  LIKELY ATS-COMPATIBLE"
             verdict_style = "bold yellow"
         else:
             verdict = "✓ ATS-FRIENDLY"
@@ -137,3 +137,74 @@ class TerminalReporter(BaseReporter):
         Print the report directly to the terminal.
         """
         self._render_report(self.console, result)
+
+    def report_batch(self, batch: BatchReport, output: Path | None = None) -> str:
+        """Generate a formatted batch report as a string."""
+        capture_console = Console(
+            file=io.StringIO(),
+            force_terminal=False,
+            color_system=None,
+            width=self.console.width,
+        )
+        self._render_batch(capture_console, batch)
+        full_report = capture_console.file.getvalue()
+        if output:
+            output.write_text(full_report, encoding="utf-8")
+        return full_report
+
+    def report_batch_to_console(self, batch: BatchReport) -> None:
+        """Print the batch report directly to the terminal."""
+        self._render_batch(self.console, batch)
+
+    def _render_batch(self, console: Console, batch: BatchReport) -> None:
+        """Render all reports with separators and a summary."""
+        for idx, report in enumerate(batch.reports):
+            if idx > 0:
+                console.print()
+                console.rule(
+                    f"[bold cyan]{report.pdf_path.name}[/bold cyan]",
+                    style="cyan",
+                )
+                console.print()
+            self._render_report(console, report)
+
+        # Batch summary
+        console.print()
+        console.rule("[bold]Batch Summary[/bold]", style="bold")
+        console.print()
+
+        summary_table = Table.grid(padding=(0, 2))
+        summary_table.add_column(style="bold", justify="right")
+        summary_table.add_column()
+        summary_table.add_row("Files checked:", str(batch.total_files))
+        summary_table.add_row(
+            "Files with critical issues:",
+            f"[red]{batch.files_with_critical}[/red]",
+        )
+        summary_table.add_row(
+            "Files with warnings:",
+            f"[yellow]{batch.files_with_warnings}[/yellow]",
+        )
+        summary_table.add_row(
+            "Files passed:",
+            f"[green]{batch.files_passed}[/green]",
+        )
+        console.print(summary_table)
+
+        # Overall verdict
+        if batch.has_critical:
+            verdict = "✗ SOME FILES HAVE CRITICAL ISSUES"
+            verdict_style = "bold red"
+        elif batch.files_with_warnings > 0:
+            verdict = "⚠  ALL FILES LIKELY ATS-COMPATIBLE"
+            verdict_style = "bold yellow"
+        else:
+            verdict = "✓ ALL FILES ATS-FRIENDLY"
+            verdict_style = "bold green"
+        console.print(
+            Panel(
+                Text(verdict, style=verdict_style),
+                border_style=verdict_style,
+                expand=False,
+            )
+        )

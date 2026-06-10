@@ -9,7 +9,7 @@ from rich.table import Table
 from ats_checker.checkers.registry import CheckerRegistry
 from ats_checker.config import Config
 from ats_checker.engine import run_check
-from ats_checker.models import CheckReport, Severity
+from ats_checker.models import BatchReport, CheckReport
 from ats_checker.reporters import get_reporter
 from ats_checker.reporters.utils import save_extracted_text
 
@@ -97,7 +97,6 @@ def check(
 
     # 3. Execution
     reports: List[CheckReport] = []
-    has_critical = False
 
     try:
         with Progress(
@@ -122,14 +121,6 @@ def check(
                 if save_text:
                     save_extracted_text(report, path)
 
-                # Check for critical issues to determine exit code
-                if any(
-                    issue.severity == Severity.CRITICAL
-                    for result in report.check_results
-                    for issue in result.issues
-                ):
-                    has_critical = True
-
                 reports.append(report)
                 progress.advance(task)
 
@@ -137,33 +128,33 @@ def check(
         console.print("\n[yellow]Aborted.[/yellow]")
         raise typer.Exit(code=2)
 
-    # 4. Reporting
+    # 4. Build batch report
+    batch = BatchReport(reports=reports)
+
+    # 5. Reporting
     try:
         reporter = get_reporter(format)
     except ValueError as e:
         console.print(f"[red]Error:[/red] {e}")
         raise typer.Exit(code=2)
 
-    for report in reports:
-        if format == "terminal":
-            reporter.report_to_console(report)
-        else:
-            # For non-terminal, output is handled by reporter.report()
-            # In batch mode with a single output path, this might overwrite.
-            # Phase 4.4 will improve this.
-            # Determine output path: use provided path or default to <pdf_name><suffix>.<format>
+    if format == "terminal":
+        reporter.report_batch_to_console(batch)
+    elif output is not None:
+        # Explicit output path: write combined batch report
+        reporter.report_batch(batch, output=output)
+        console.print(f"[green]Report saved to:[/green] [bold]{output.absolute()}[/bold]")
+    else:
+        # No explicit output: generate per-file reports
+        for report in reports:
             suffix = config.output.report_filename_suffix
-            if output is not None:
-                final_output = output
-            else:
-                filename = f"{report.pdf_path.stem}{suffix}.{format}"
-                final_output = report.pdf_path.with_name(filename)
-
+            filename = f"{report.pdf_path.stem}{suffix}.{format}"
+            final_output = report.pdf_path.with_name(filename)
             reporter.report(report, output=final_output)
             console.print(f"[green]Report saved to:[/green] [bold]{final_output.absolute()}[/bold]")
 
-    # 5. Exit
-    if has_critical:
+    # 6. Exit
+    if batch.has_critical:
         raise typer.Exit(code=1)
     raise typer.Exit(code=0)
 

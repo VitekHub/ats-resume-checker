@@ -96,6 +96,40 @@ class CheckReport(BaseModel):
         )
 
 
+class BatchReport(BaseModel):
+    """
+    Aggregate report across multiple PDF files checked in a single invocation.
+    """
+
+    reports: list[CheckReport]
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+    @computed_field
+    def total_files(self) -> int:
+        """Number of PDF files checked."""
+        return len(self.reports)
+
+    @computed_field
+    def files_with_critical(self) -> int:
+        """Number of files that have at least one critical issue."""
+        return sum(1 for r in self.reports if r.critical_count > 0)
+
+    @computed_field
+    def files_with_warnings(self) -> int:
+        """Number of files with warnings but no critical issues."""
+        return sum(1 for r in self.reports if r.critical_count == 0 and r.warning_count > 0)
+
+    @computed_field
+    def files_passed(self) -> int:
+        """Number of files with no critical or warning issues."""
+        return sum(1 for r in self.reports if r.critical_count == 0 and r.warning_count == 0)
+
+    @computed_field
+    def has_critical(self) -> bool:
+        """Whether any file has critical issues."""
+        return any(r.critical_count > 0 for r in self.reports)
+
+
 class CheckerConfig(BaseModel):
     """
     Base configuration model for ATS checkers.

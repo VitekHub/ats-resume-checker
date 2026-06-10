@@ -100,12 +100,12 @@
 
 **Goal:** Allow users to customize behavior via config files.
 
-- [ ] Define config file search order:
+- [x] Define config file search order:
   1. `--config` CLI flag (highest priority)
   2. `ats-checker.toml` in current directory
   3. `~/.config/ats-checker/config.toml` (XDG-style)
   4. Built-in defaults (lowest priority)
-- [ ] Support TOML format (most Pythonic):
+- [x] Support TOML format (most Pythonic):
   ```toml
   [thresholds]
   max_file_size_kb = 1024
@@ -121,9 +121,9 @@
   default_format = "terminal"
   color = true
   ```
-- [ ] Merge config layers: defaults ← file ← env vars ← CLI flags
-- [ ] Validate merged config (e.g., warning threshold < critical threshold)
-- [ ] Print effective config with `--show-config` flag (for debugging)
+- [x] Merge config layers: defaults ← file ← env vars ← CLI flags
+- [x] Validate merged config (e.g., warning threshold < critical threshold)
+- [x] Print effective config with `--show-config` flag (for debugging)
 
 **Acceptance:** `ats-check check resume.pdf --config my-config.toml` loads and applies custom config. Config values override defaults.
 
@@ -133,14 +133,14 @@
 
 **Goal:** Check multiple PDF files in one invocation.
 
-- [ ] Support multiple `paths` arguments:
+- [x] Support multiple `paths` arguments:
   - `ats-check check resume1.pdf resume2.pdf resume3.pdf`
   - `ats-check check ./resumes/*.pdf`
-- [ ] For terminal format: print each report with a separator
-- [ ] For JSON format: output a single JSON array or individual files
-- [ ] For HTML format: generate a single HTML report with sections per file
-- [ ] Show summary across all files: "3 checked, 1 critical, 1 warning, 1 passed"
-- [ ] Exit code: 1 if ANY file has critical issues, 0 if all pass
+- [x] For terminal format: print each report with a separator
+- [x] For JSON format: output a single JSON array or individual files
+- [x] For HTML format: generate a single HTML report with sections per file
+- [x] Show summary across all files: "3 checked, 1 critical, 1 warning, 1 passed"
+- [x] Exit code: 1 if ANY file has critical issues, 0 if all pass
 
 **Acceptance:** `ats-check check *.pdf --format terminal` checks all PDFs and shows individual + summary reports.
 
