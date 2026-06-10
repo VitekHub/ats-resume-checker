@@ -7,6 +7,12 @@ from pydantic import BaseModel, Field, model_validator
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 
+class ConfigError(Exception):
+    """Raised when there is an error loading or validating the configuration."""
+
+    pass
+
+
 class FileSizeConfig(BaseModel):
     """Configuration for file size limits."""
 
@@ -184,8 +190,10 @@ class TomlConfigSettingsSource(PydanticBaseSettingsSource):
                         data = tomllib.load(f)
                         if isinstance(data, dict):
                             self._deep_update(merged_data, data)
-                except Exception:
-                    continue
+                except tomllib.TOMLDecodeError as e:
+                    raise ConfigError(f"Invalid TOML syntax in {path}: {e}") from e
+                except OSError as e:
+                    raise ConfigError(f"Could not read config file {path}: {e}") from e
 
         return merged_data
 

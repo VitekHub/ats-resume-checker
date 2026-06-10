@@ -7,9 +7,10 @@ from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn
 from rich.table import Table
 
 from ats_checker.checkers.registry import CheckerRegistry
-from ats_checker.config import Config
+from ats_checker.config import Config, ConfigError
 from ats_checker.engine import run_check
 from ats_checker.models import BatchReport, CheckReport
+from ats_checker.pdf_utils import PDFCorruptedError, PDFPasswordError
 from ats_checker.reporters import get_reporter
 from ats_checker.reporters.utils import save_extracted_text
 
@@ -43,7 +44,7 @@ def validate_checkers(checkers: Optional[List[str]], skip_checkers: Optional[Lis
 
 @app.command()
 def check(
-    paths: List[Path] = typer.Argument(..., exists=True, help="PDF file(s) to check"),
+    paths: List[Path] = typer.Argument(..., exists=False, help="PDF file(s) to check"),
     format: str = typer.Option(
         "terminal", "--format", "-f", help="Output format: terminal, json, html"
     ),
@@ -74,6 +75,9 @@ def check(
     """
     # 1. Input Validation
     for path in paths:
+        if not path.exists():
+            console.print(f"[red]Error:[/red] File [bold]{path}[/bold] not found.")
+            raise typer.Exit(code=2)
         if path.suffix.lower() != ".pdf":
             console.print(f"[red]Error:[/red] File [bold]{path.name}[/bold] is not a PDF.")
             raise typer.Exit(code=2)
@@ -81,8 +85,12 @@ def check(
     validate_checkers(checker, skip_checker)
 
     # 2. Config Loading
-    Config._explicit_config_path = config_file
-    config = Config()
+    try:
+        Config._explicit_config_path = config_file
+        config = Config()
+    except ConfigError as e:
+        console.print(f"[red]Configuration Error:[/red] {e}")
+        raise typer.Exit(code=2)
 
     # Override config with CLI options
     config.output.format = format
@@ -111,12 +119,19 @@ def check(
             for path in paths:
                 progress.update(task, description=f"[cyan]Checking {path.name}...")
 
-                report = run_check(
-                    pdf_path=path,
-                    config=config,
-                    checkers=checker,
-                    skip_checkers=skip_checker,
-                )
+                try:
+                    report = run_check(
+                        pdf_path=path,
+                        config=config,
+                        checkers=checker,
+                        skip_checkers=skip_checker,
+                    )
+                except (PDFCorruptedError, PDFPasswordError) as e:
+                    console.print(f"\n[red]PDF Error:[/red] {path.name}: {e}")
+                    raise typer.Exit(code=2)
+                except ValueError as e:
+                    console.print(f"\n[red]Error:[/red] {e}")
+                    raise typer.Exit(code=2)
 
                 if save_text:
                     save_extracted_text(report, path)
@@ -126,6 +141,9 @@ def check(
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Aborted.[/yellow]")
+        raise typer.Exit(code=2)
+    except Exception as e:
+        console.print(f"\n[red]Unexpected Error:[/red] {e}")
         raise typer.Exit(code=2)
 
     # 4. Build batch report
@@ -138,20 +156,31 @@ def check(
         console.print(f"[red]Error:[/red] {e}")
         raise typer.Exit(code=2)
 
-    if format == "terminal":
-        reporter.report_batch_to_console(batch)
-    elif output is not None:
-        # Explicit output path: write combined batch report
-        reporter.report_batch(batch, output=output)
-        console.print(f"[green]Report saved to:[/green] [bold]{output.absolute()}[/bold]")
-    else:
-        # No explicit output: generate per-file reports
-        for report in reports:
-            suffix = config.output.report_filename_suffix
-            filename = f"{report.pdf_path.stem}{suffix}.{format}"
-            final_output = report.pdf_path.with_name(filename)
-            reporter.report(report, output=final_output)
-            console.print(f"[green]Report saved to:[/green] [bold]{final_output.absolute()}[/bold]")
+    try:
+        if format == "terminal":
+            reporter.report_batch_to_console(batch)
+        elif output is not None:
+            # Explicit output path: write combined batch report
+            reporter.report_batch(batch, output=output)
+            console.print(f"[green]Report saved to:[/green] [bold]{output.absolute()}[/bold]")
+        else:
+            # No explicit output: generate per-file reports
+            for report in reports:
+                suffix = config.output.report_filename_suffix
+                filename = f"{report.pdf_path.stem}{suffix}.{format}"
+                final_output = report.pdf_path.with_name(filename)
+                reporter.report(report, output=final_output)
+                console.print(
+                    f"[green]Report saved to:[/green] [bold]{final_output.absolute()}[/bold]"
+                )
+    except (PermissionError, OSError) as e:
+        # Find the path that caused the error if possible
+        path_str = str(output) if output else "the output file"
+        console.print(f"[red]Output Error:[/red] Could not write to {path_str}: {e}")
+        raise typer.Exit(code=2)
+    except Exception as e:
+        console.print(f"[red]Unexpected Error during reporting:[/red] {e}")
+        raise typer.Exit(code=2)
 
     # 6. Exit
     if batch.has_critical:

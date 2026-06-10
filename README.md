@@ -2,11 +2,17 @@
 
 A CLI tool that analyzes PDF resumes for ATS (Applicant Tracking System) compatibility. It detects common issues that cause ATS failures — embedded images, garbled text extraction, multi-column layouts, unsafe fonts, missing sections, metadata leaks, and more.
 
+## Prerequisites
+
+- **Python 3.11+** with `pip`
+- **Build tools** (Linux only) — PyMuPDF may require `gcc` and `mupdf-dev`. On Debian/Ubuntu: `sudo apt install build-essential libmupdf-dev`
+
 ## Installation
 
 ```bash
-pip install -e .          # runtime only
-pip install -e ".[dev]"   # with lint/test/type-check tools
+pip install .            # runtime only
+pip install -e ".[dev]"  # editable, with dev tools
+pip uninstall ats-resume-checker  # remove
 ```
 
 ## Usage
@@ -82,4 +88,4 @@ pytest                   # run tests
 pytest --cov=ats_checker # with coverage
 ```
 
-Python 3.11+ required. See [implementation plan](docs/implementation_plan/) for project phases and status.
+See [implementation plan](docs/implementation_plan/) for project phases and status.

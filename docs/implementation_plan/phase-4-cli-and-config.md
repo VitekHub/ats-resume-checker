@@ -169,16 +169,16 @@
 
 **Goal:** Handle all user-facing error cases gracefully.
 
-- [ ] File not found → clear error message, exit code 2
-- [ ] Not a PDF → clear error message, exit code 2
-- [ ] Corrupted PDF → `PDFCorruptedError` caught, clear message
-- [ ] Password-protected PDF → `PDFPasswordError` caught, clear message
-- [ ] Empty PDF → warning, not crash
-- [ ] No checkers selected (all skipped) → error message
-- [ ] Invalid config file → clear error with line number
-- [ ] Output directory doesn't exist → offer to create or error
-- [ ] Permission denied on output file → clear message
-- [ ] Unicode in file paths → handled correctly on Windows
+- [x] File not found → clear error message, exit code 2
+- [x] Not a PDF → clear error message, exit code 2
+- [x] Corrupted PDF → `PDFCorruptedError` caught, clear message
+- [x] Password-protected PDF → `PDFPasswordError` caught, clear message
+- [x] Empty PDF → warning, not crash
+- [x] No checkers selected (all skipped) → error message
+- [x] Invalid config file → clear error with line number
+- [x] Output directory doesn't exist → offer to create or error
+- [x] Permission denied on output file → clear message
+- [x] Unicode in file paths → handled correctly on Windows
 
 **Acceptance:** All error cases produce clear, actionable messages. No stack traces leak to users.
 
