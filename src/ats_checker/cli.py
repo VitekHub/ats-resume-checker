@@ -65,6 +65,9 @@ def check(
         False, "--save-text", help="Save extracted text as .extracted.txt sidecar file"
     ),
     score: bool = typer.Option(False, "--score", help="Calculate and show ATS compatibility score"),
+    show_config: bool = typer.Option(
+        False, "--show-config", help="Print the effective configuration and exit"
+    ),
 ) -> None:
     """
     Analyze PDF resumes for ATS compatibility issues.
@@ -78,14 +81,19 @@ def check(
     validate_checkers(checker, skip_checker)
 
     # 2. Config Loading
+    Config._explicit_config_path = config_file
     config = Config()
-    if config_file:
-        config = config.load_from_file(config_file)
 
     # Override config with CLI options
     config.output.format = format
     config.output.color_output = not no_color
     config.output.verbose = verbose
+
+    if show_config:
+        console.print("\n[bold cyan]Effective Configuration:[/bold cyan]")
+        console.print(config.show_effective_config())
+        console.print("\n")
+        raise typer.Exit(code=0)
 
     # 3. Execution
     reports: List[CheckReport] = []
