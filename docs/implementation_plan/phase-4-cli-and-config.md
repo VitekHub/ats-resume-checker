@@ -150,14 +150,14 @@
 
 **Goal:** Support `python -m ats_checker` invocation.
 
-- [ ] Create `src/ats_checker/__main__.py`:
+- [x] Create `src/ats_checker/__main__.py`:
   ```python
   from ats_checker.cli import app
 
   if __name__ == "__main__":
       app()
   ```
-- [ ] Verify both invocation methods work:
+- [x] Verify both invocation methods work:
   - `ats-check check resume.pdf`
   - `python -m ats_checker check resume.pdf`
 
