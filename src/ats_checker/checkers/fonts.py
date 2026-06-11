@@ -35,7 +35,9 @@ class FontsChecker(BaseChecker):
         symbol_fonts_found = fonts.intersection(self.config.fonts.symbol_fonts)
         safe_fonts = self.config.fonts.safe_fonts
         unusual_fonts_found = {
-            f for f in fonts if f not in safe_fonts and f not in symbol_fonts_found
+            f
+            for f in fonts
+            if not any(f.startswith(sf) for sf in safe_fonts) and f not in symbol_fonts_found
         }
 
         issues: list[Issue] = []

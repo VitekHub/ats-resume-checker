@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tomllib
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
@@ -169,7 +170,11 @@ class UnicodeConfig(BaseModel):
 class TomlConfigSettingsSource(PydanticBaseSettingsSource):
     """Custom source to load configuration from TOML files with a specific search order."""
 
-    def __call__(self) -> dict[str, any]:
+    def __init__(self, settings_cls, explicit_config_path: Path | None = None):
+        super().__init__(settings_cls)
+        self.explicit_config_path = explicit_config_path
+
+    def __call__(self) -> dict[str, Any]:
         """Resolve and merge TOML configuration files."""
         merged_data = {}
 
@@ -180,7 +185,7 @@ class TomlConfigSettingsSource(PydanticBaseSettingsSource):
             # 2. Local config
             Path.cwd() / "ats-checker.toml",
             # 3. Explicit config
-            getattr(self.settings_cls, "_explicit_config_path", None),
+            self.explicit_config_path,
         ]
 
         for path in config_paths:
@@ -216,7 +221,7 @@ class Config(BaseSettings):
     Loaded from defaults -> config file -> environment variables -> overrides.
     """
 
-    _explicit_config_path: Path | None = None
+    config_file: Path | None = None
 
     model_config = SettingsConfigDict(
         env_prefix="ATS_CHECKER_",
@@ -245,23 +250,17 @@ class Config(BaseSettings):
         Customise the priority of settings sources.
         Order (highest to lowest): Init Args -> Env Vars -> TOML Files -> Dotenv -> Secrets
         """
+        init_data = init_settings()
+        explicit_path = init_data.get("config_file")
+
         return (
             init_settings,
             env_settings,
-            TomlConfigSettingsSource(cls),
+            TomlConfigSettingsSource(cls, explicit_config_path=explicit_path),
             dotenv_settings,
             file_secret_settings,
         )
 
     def show_effective_config(self) -> str:
         """Returns a string representation of the effective configuration."""
-        import json
-
-        return json.dumps(self.model_dump(mode="json"), indent=2)
-
-    @classmethod
-    def from_current_script(cls) -> Config:
-        """
-        Returns a Config instance with defaults that match the original ats_check.py script.
-        """
-        return cls()
+        return self.model_dump_json(indent=2)

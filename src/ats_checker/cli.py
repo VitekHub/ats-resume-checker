@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import List, Optional
 
@@ -45,7 +46,7 @@ def validate_checkers(checkers: Optional[List[str]], skip_checkers: Optional[Lis
 @app.command()
 def check(
     paths: List[Path] = typer.Argument(..., exists=False, help="PDF file(s) to check"),
-    format: str = typer.Option(
+    output_format: str = typer.Option(
         "terminal", "--format", "-f", help="Output format: terminal, json, html"
     ),
     output: Optional[Path] = typer.Option(
@@ -86,14 +87,13 @@ def check(
 
     # 2. Config Loading
     try:
-        Config._explicit_config_path = config_file
-        config = Config()
+        config = Config(config_file=config_file)
     except ConfigError as e:
         console.print(f"[red]Configuration Error:[/red] {e}")
         raise typer.Exit(code=2)
 
     # Override config with CLI options
-    config.output.format = format
+    config.output.format = output_format
     config.output.color_output = not no_color
     config.output.verbose = verbose
 
@@ -105,6 +105,7 @@ def check(
 
     # 3. Execution
     reports: List[CheckReport] = []
+    errors: List[tuple[Path, str]] = []
 
     try:
         with Progress(
@@ -126,12 +127,11 @@ def check(
                         checkers=checker,
                         skip_checkers=skip_checker,
                     )
-                except (PDFCorruptedError, PDFPasswordError) as e:
-                    console.print(f"\n[red]PDF Error:[/red] {path.name}: {e}")
-                    raise typer.Exit(code=2)
-                except ValueError as e:
-                    console.print(f"\n[red]Error:[/red] {e}")
-                    raise typer.Exit(code=2)
+                except (PDFCorruptedError, PDFPasswordError, ValueError) as e:
+                    console.print(f"\n[red]Error:[/red] {path.name}: {e}")
+                    errors.append((path, str(e)))
+                    progress.advance(task)
+                    continue
 
                 if save_text:
                     save_extracted_text(report, path)
@@ -143,32 +143,35 @@ def check(
         console.print("\n[yellow]Aborted.[/yellow]")
         raise typer.Exit(code=2)
     except Exception as e:
+        logging.exception("Unexpected error during check")
         console.print(f"\n[red]Unexpected Error:[/red] {e}")
         raise typer.Exit(code=2)
 
     # 4. Build batch report
-    batch = BatchReport(reports=reports)
+    batch = BatchReport(reports=reports, errors=errors)
 
     # 5. Reporting
     try:
-        reporter = get_reporter(format)
+        reporter = get_reporter(output_format)
     except ValueError as e:
         console.print(f"[red]Error:[/red] {e}")
         raise typer.Exit(code=2)
 
     try:
-        if format == "terminal":
+        if output_format == "terminal":
             reporter.report_batch_to_console(batch)
         elif output is not None:
             # Explicit output path: write combined batch report
+            output.parent.mkdir(parents=True, exist_ok=True)
             reporter.report_batch(batch, output=output)
             console.print(f"[green]Report saved to:[/green] [bold]{output.absolute()}[/bold]")
         else:
             # No explicit output: generate per-file reports
             for report in reports:
                 suffix = config.output.report_filename_suffix
-                filename = f"{report.pdf_path.stem}{suffix}.{format}"
+                filename = f"{report.pdf_path.stem}{suffix}.{output_format}"
                 final_output = report.pdf_path.with_name(filename)
+                final_output.parent.mkdir(parents=True, exist_ok=True)
                 reporter.report(report, output=final_output)
                 console.print(
                     f"[green]Report saved to:[/green] [bold]{final_output.absolute()}[/bold]"

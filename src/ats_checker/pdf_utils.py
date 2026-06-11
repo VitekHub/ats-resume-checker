@@ -169,8 +169,7 @@ def extract_images_info(pdf: PDFDocument, config: Config) -> list[ImageInfo]:
                 height = pix.height
 
                 is_large = (
-                    width >= config.images.large_width_px
-                    and height >= config.images.large_height_px
+                    width >= config.images.large_width_px or height >= config.images.large_height_px
                 )
 
                 images_info.append(

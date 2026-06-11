@@ -62,7 +62,7 @@ class CheckReport(BaseModel):
     check_results: list[CheckerResult]
     score: float | None = Field(default=None, description="Overall ATS compatibility score")
     all_text: str | None = Field(default=None, description="Full text extracted from the PDF")
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now().astimezone())
 
     @computed_field
     def all_issues(self) -> list[Issue]:
@@ -102,7 +102,8 @@ class BatchReport(BaseModel):
     """
 
     reports: list[CheckReport]
-    timestamp: datetime = Field(default_factory=datetime.now)
+    errors: list[tuple[Path, str]] = Field(default_factory=list)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now().astimezone())
 
     @computed_field
     def total_files(self) -> int:
