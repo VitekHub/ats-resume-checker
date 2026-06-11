@@ -1,12 +1,212 @@
-import typer
+import logging
+from pathlib import Path
+from typing import List, Optional
 
-app = typer.Typer()
+import typer
+from rich.console import Console
+from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
+from rich.table import Table
+
+from ats_checker.checkers.registry import CheckerRegistry
+from ats_checker.config import Config, ConfigError
+from ats_checker.engine import run_check
+from ats_checker.models import BatchReport, CheckReport
+from ats_checker.pdf_utils import PDFCorruptedError, PDFPasswordError
+from ats_checker.reporters import get_reporter
+from ats_checker.reporters.utils import save_extracted_text
+
+console = Console()
+app = typer.Typer(
+    name="ats-check",
+    help="Check PDF resumes for ATS compatibility issues",
+    rich_markup_mode="markdown",
+)
+
+
+def validate_checkers(checkers: Optional[List[str]], skip_checkers: Optional[List[str]]) -> None:
+    """Validate that requested and skipped checkers exist in the registry."""
+    valid_names = {cls.name for cls in CheckerRegistry.get_all()}
+
+    if checkers:
+        for name in checkers:
+            if name not in valid_names:
+                raise typer.BadParameter(
+                    f"Unknown checker: {name!r}. Available: {', '.join(sorted(valid_names))}"
+                )
+
+    if skip_checkers:
+        for name in skip_checkers:
+            if name not in valid_names:
+                raise typer.BadParameter(
+                    f"Unknown checker to skip: {name!r}. "
+                    f"Available: {', '.join(sorted(valid_names))}"
+                )
 
 
 @app.command()
-def check(path: str) -> None:
-    """Check a resume PDF for ATS compatibility."""
-    print(f"Checking {path}...")
+def check(
+    paths: List[Path] = typer.Argument(..., exists=False, help="PDF file(s) to check"),
+    output_format: str = typer.Option(
+        "terminal", "--format", "-f", help="Output format: terminal, json, html"
+    ),
+    output: Optional[Path] = typer.Option(
+        None, "--output", "-o", help="Output file path (required for json/html format)"
+    ),
+    checker: Optional[List[str]] = typer.Option(
+        None, "--checker", "-c", help="Run only these checkers (by name)"
+    ),
+    skip_checker: Optional[List[str]] = typer.Option(
+        None, "--skip-checker", "-s", help="Skip these checkers (by name)"
+    ),
+    config_file: Optional[Path] = typer.Option(None, "--config", help="Path to configuration file"),
+    verbose: bool = typer.Option(
+        True, "--verbose", "-v", help="Show all checks including passing ones"
+    ),
+    no_color: bool = typer.Option(False, "--no-color", help="Disable colored output"),
+    save_text: bool = typer.Option(
+        False, "--save-text", help="Save extracted text as .extracted.txt sidecar file"
+    ),
+    score: bool = typer.Option(False, "--score", help="Calculate and show ATS compatibility score"),
+    show_config: bool = typer.Option(
+        False, "--show-config", help="Print the effective configuration and exit"
+    ),
+) -> None:
+    """
+    Analyze PDF resumes for ATS compatibility issues.
+    """
+    # 1. Input Validation
+    for path in paths:
+        if not path.exists():
+            console.print(f"[red]Error:[/red] File [bold]{path}[/bold] not found.")
+            raise typer.Exit(code=2)
+        if path.suffix.lower() != ".pdf":
+            console.print(f"[red]Error:[/red] File [bold]{path.name}[/bold] is not a PDF.")
+            raise typer.Exit(code=2)
+
+    validate_checkers(checker, skip_checker)
+
+    # 2. Config Loading
+    try:
+        config = Config(config_file=config_file)
+    except ConfigError as e:
+        console.print(f"[red]Configuration Error:[/red] {e}")
+        raise typer.Exit(code=2)
+
+    # Override config with CLI options
+    config.output.format = output_format
+    config.output.color_output = not no_color
+    config.output.verbose = verbose
+
+    if show_config:
+        console.print("\n[bold cyan]Effective Configuration:[/bold cyan]")
+        console.print(config.show_effective_config())
+        console.print("\n")
+        raise typer.Exit(code=0)
+
+    # 3. Execution
+    reports: List[CheckReport] = []
+    errors: List[tuple[Path, str]] = []
+
+    try:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            console=console,
+        ) as progress:
+            task = progress.add_task("[cyan]Analyzing resumes...", total=len(paths))
+
+            for path in paths:
+                progress.update(task, description=f"[cyan]Checking {path.name}...")
+
+                try:
+                    report = run_check(
+                        pdf_path=path,
+                        config=config,
+                        checkers=checker,
+                        skip_checkers=skip_checker,
+                    )
+                except (PDFCorruptedError, PDFPasswordError, ValueError) as e:
+                    console.print(f"\n[red]Error:[/red] {path.name}: {e}")
+                    errors.append((path, str(e)))
+                    progress.advance(task)
+                    continue
+
+                if save_text:
+                    save_extracted_text(report, path)
+
+                reports.append(report)
+                progress.advance(task)
+
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Aborted.[/yellow]")
+        raise typer.Exit(code=2)
+    except Exception as e:
+        logging.exception("Unexpected error during check")
+        console.print(f"\n[red]Unexpected Error:[/red] {e}")
+        raise typer.Exit(code=2)
+
+    # 4. Build batch report
+    batch = BatchReport(reports=reports, errors=errors)
+
+    # 5. Reporting
+    try:
+        reporter = get_reporter(output_format)
+    except ValueError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        raise typer.Exit(code=2)
+
+    try:
+        if output_format == "terminal":
+            reporter.report_batch_to_console(batch)
+        elif output is not None:
+            # Explicit output path: write combined batch report
+            output.parent.mkdir(parents=True, exist_ok=True)
+            reporter.report_batch(batch, output=output)
+            console.print(f"[green]Report saved to:[/green] [bold]{output.absolute()}[/bold]")
+        else:
+            # No explicit output: generate per-file reports
+            for report in reports:
+                suffix = config.output.report_filename_suffix
+                filename = f"{report.pdf_path.stem}{suffix}.{output_format}"
+                final_output = report.pdf_path.with_name(filename)
+                final_output.parent.mkdir(parents=True, exist_ok=True)
+                reporter.report(report, output=final_output)
+                console.print(
+                    f"[green]Report saved to:[/green] [bold]{final_output.absolute()}[/bold]"
+                )
+    except (PermissionError, OSError) as e:
+        # Find the path that caused the error if possible
+        path_str = str(output) if output else "the output file"
+        console.print(f"[red]Output Error:[/red] Could not write to {path_str}: {e}")
+        raise typer.Exit(code=2)
+    except Exception as e:
+        console.print(f"[red]Unexpected Error during reporting:[/red] {e}")
+        raise typer.Exit(code=2)
+
+    # 6. Exit
+    if batch.has_critical:
+        raise typer.Exit(code=1)
+    raise typer.Exit(code=0)
+
+
+@app.command("list-checkers")
+def list_checkers() -> None:
+    """List all available checker modules and their descriptions."""
+    checkers = CheckerRegistry.get_all()
+    if not checkers:
+        console.print("[yellow]No checkers are currently registered.[/yellow]")
+        return
+
+    table = Table(title="Available ATS Checkers")
+    table.add_column("Name", style="cyan", no_wrap=True)
+    table.add_column("Description", style="white")
+
+    for checker_cls in sorted(checkers, key=lambda x: x.name):
+        table.add_row(checker_cls.name, checker_cls.description)
+
+    console.print(table)
 
 
 if __name__ == "__main__":

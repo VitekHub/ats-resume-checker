@@ -2,9 +2,16 @@ from __future__ import annotations
 
 import tomllib
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
+
+
+class ConfigError(Exception):
+    """Raised when there is an error loading or validating the configuration."""
+
+    pass
 
 
 class FileSizeConfig(BaseModel):
@@ -140,8 +147,9 @@ class OutputConfig(BaseModel):
 
     format: str = "terminal"
     color_output: bool = True
-    verbose: bool = False
+    verbose: bool = True
     compact: bool = False
+    report_filename_suffix: str = "-ats-report"
 
 
 class UnicodeConfig(BaseModel):
@@ -159,11 +167,61 @@ class UnicodeConfig(BaseModel):
     )
 
 
+class TomlConfigSettingsSource(PydanticBaseSettingsSource):
+    """Custom source to load configuration from TOML files with a specific search order."""
+
+    def __init__(self, settings_cls, explicit_config_path: Path | None = None):
+        super().__init__(settings_cls)
+        self.explicit_config_path = explicit_config_path
+
+    def __call__(self) -> dict[str, Any]:
+        """Resolve and merge TOML configuration files."""
+        merged_data = {}
+
+        # Search order (lowest to highest priority)
+        config_paths = [
+            # 1. XDG config
+            Path.home() / ".config" / "ats-checker" / "config.toml",
+            # 2. Local config
+            Path.cwd() / "ats-checker.toml",
+            # 3. Explicit config
+            self.explicit_config_path,
+        ]
+
+        for path in config_paths:
+            if path and isinstance(path, Path) and path.exists():
+                try:
+                    with path.open("rb") as f:
+                        data = tomllib.load(f)
+                        if isinstance(data, dict):
+                            self._deep_update(merged_data, data)
+                except tomllib.TOMLDecodeError as e:
+                    raise ConfigError(f"Invalid TOML syntax in {path}: {e}") from e
+                except OSError as e:
+                    raise ConfigError(f"Could not read config file {path}: {e}") from e
+
+        return merged_data
+
+    def get_field_value(self, field, field_name):
+        """Return None to let the main settings loop handle field resolution via the dict."""
+        return None
+
+    def _deep_update(self, source: dict, update: dict) -> None:
+        """Recursively update a dictionary."""
+        for key, value in update.items():
+            if isinstance(value, dict) and key in source and isinstance(source[key], dict):
+                self._deep_update(source[key], value)
+            else:
+                source[key] = value
+
+
 class Config(BaseSettings):
     """
     Main application configuration.
     Loaded from defaults -> config file -> environment variables -> overrides.
     """
+
+    config_file: Path | None = None
 
     model_config = SettingsConfigDict(
         env_prefix="ATS_CHECKER_",
@@ -181,25 +239,28 @@ class Config(BaseSettings):
     output: OutputConfig = Field(default_factory=OutputConfig)
     unicode: UnicodeConfig = Field(default_factory=UnicodeConfig)
 
-    @classmethod
-    def from_current_script(cls) -> Config:
+    def settings_customise_sources(
+        cls,
+        init_settings,
+        env_settings,
+        dotenv_settings,
+        file_secret_settings,
+    ):
         """
-        Returns a Config instance with defaults that match the original ats_check.py script.
+        Customise the priority of settings sources.
+        Order (highest to lowest): Init Args -> Env Vars -> TOML Files -> Dotenv -> Secrets
         """
-        return cls()
+        init_data = init_settings()
+        explicit_path = init_data.get("config_file")
 
-    def load_from_file(self, path: Path) -> Config:
-        """
-        Loads configuration from a TOML file and updates the current config.
-        """
-        if not path.exists():
-            return self
+        return (
+            init_settings,
+            env_settings,
+            TomlConfigSettingsSource(cls, explicit_config_path=explicit_path),
+            dotenv_settings,
+            file_secret_settings,
+        )
 
-        if path.suffix == ".toml":
-            with path.open("rb") as f:
-                data = tomllib.load(f)
-                # We update using model_copy to maintain the original instance's state
-                # but with new data. BaseSettings supports nested updates via dict.
-                return self.model_copy(update=data)
-
-        return self
+    def show_effective_config(self) -> str:
+        """Returns a string representation of the effective configuration."""
+        return self.model_dump_json(indent=2)

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from ..config import Config
-from ..models import CheckReport
+from ..models import BatchReport, CheckReport
 from .base import BaseReporter, register_reporter
 
 
@@ -34,6 +34,25 @@ class JSONReporter(BaseReporter):
         json_report = result.model_dump_json(indent=indent)
 
         # Write to file if output path is provided
+        if output:
+            output.write_text(json_report, encoding="utf-8")
+
+        return json_report
+
+    def report_batch(self, batch: BatchReport, output: Path | None = None) -> str:
+        """
+        Generate a JSON batch report from multiple check results.
+
+        Args:
+            batch: The BatchReport containing multiple CheckReports.
+            output: Optional path to write the JSON output to.
+
+        Returns:
+            The serialized JSON batch report as a string.
+        """
+        indent = 2 if not self._cfg.output.compact else None
+        json_report = batch.model_dump_json(indent=indent)
+
         if output:
             output.write_text(json_report, encoding="utf-8")
 

@@ -8,7 +8,6 @@ from ats_checker.checkers.registry import CheckerRegistry
 from ats_checker.config import Config
 from ats_checker.models import CheckerResult, CheckReport, Issue, Severity
 from ats_checker.pdf_utils import PDFDocument, extract_text
-from ats_checker.reporters.utils import save_extracted_text
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +51,35 @@ def run_check(
             cls for cls in resolved_checker_classes if cls.name not in skip_set
         ]
 
+    if not resolved_checker_classes:
+        raise ValueError(
+            "No checkers selected to run. Use --checker or remove --skip-checker flags."
+        )
+
     # 2. Execute checks within PDF document context
     results: List[CheckerResult] = []
     all_text: str | None = None
 
     with PDFDocument(pdf_path) as pdf:
+        # Empty PDF check
+        if pdf.page_count == 0:
+            results.append(
+                CheckerResult(
+                    checker_name="core",
+                    issues=[
+                        Issue(
+                            severity=Severity.WARNING,
+                            title="Empty PDF document",
+                            detail="The file contains no pages.",
+                            checker_name="core",
+                            remediation="Verify that the PDF was exported correctly.",
+                            location="Document",
+                        )
+                    ],
+                    execution_time_ms=0,
+                )
+            )
+
         # Pre-load text if any selected checker requires it
         if any(cls.requires_text for cls in resolved_checker_classes):
             all_text = extract_text(pdf)
@@ -99,8 +122,5 @@ def run_check(
         all_text=all_text,
         score=None,  # Scoring implemented in Phase 7
     )
-
-    # Save extracted text as sidecar file
-    save_extracted_text(report, pdf_path)
 
     return report

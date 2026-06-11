@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Type
 
-from ..models import CheckReport
+from ..models import BatchReport, CheckReport
 
 # Private registry mapping format_name -> reporter class
 _REPORTERS: dict[str, Type["BaseReporter"]] = {}
@@ -51,3 +51,21 @@ class BaseReporter(ABC):
         Generate the report and print it to stdout.
         """
         print(self.report(result))
+
+    @abstractmethod
+    def report_batch(self, batch: BatchReport, output: Path | None = None) -> str:
+        """
+        Generate a batch report from multiple check results.
+
+        Args:
+            batch: The BatchReport containing multiple CheckReports.
+            output: Optional file path to write to. If None, return as string.
+
+        Returns:
+            The formatted batch report as a string.
+        """
+        ...
+
+    def report_batch_to_console(self, batch: BatchReport) -> None:
+        """Print the batch report to stdout."""
+        print(self.report_batch(batch))

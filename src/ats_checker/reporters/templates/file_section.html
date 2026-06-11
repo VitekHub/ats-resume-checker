@@ -1,0 +1,62 @@
+<!-- Per-file section for batch HTML report -->
+<div class="file-section mb-12">
+    <h2 class="text-2xl font-bold text-slate-800 mb-6">
+        📄 {{filename}}
+    </h2>
+    <p class="text-slate-500 text-xs mb-4">
+        Analyzed: <span class="font-medium">{{timestamp}}</span>
+    </p>
+
+    <!-- Score Section -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="md:col-span-1 bg-slate-900 text-white rounded-2xl p-6 flex flex-col items-center justify-center shadow-xl">
+            <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Overall Score</span>
+            <span class="text-3xl font-black">{{score}}</span>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+            <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Critical</span>
+            <span class="text-3xl font-bold text-red-600">{{critical_count}}</span>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+            <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Warnings</span>
+            <span class="text-3xl font-bold text-amber-500">{{warning_count}}</span>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+            <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Passed</span>
+            <span class="text-3xl font-bold text-emerald-600">{{ok_count}}</span>
+        </div>
+    </div>
+
+    <!-- Issues Sections -->
+    <div class="space-y-8">
+        <section>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-600 text-xl">🔴</span>
+                <h3 class="text-xl font-bold text-slate-800">Critical Issues</h3>
+            </div>
+            <div class="space-y-4">
+                {{critical_issues}}
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600 text-xl">🟡</span>
+                <h3 class="text-xl font-bold text-slate-800">Warnings</h3>
+            </div>
+            <div class="space-y-4">
+                {{warning_issues}}
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xl">🟢</span>
+                <h3 class="text-xl font-bold text-slate-800">Pass Checks</h3>
+            </div>
+            <div class="space-y-4">
+                {{ok_issues}}
+            </div>
+        </section>
+    </div>
+</div>

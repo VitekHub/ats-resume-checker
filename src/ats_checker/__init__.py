@@ -4,6 +4,9 @@ from pathlib import Path
 
 from .config import Config as Config
 from .models import (
+    BatchReport as BatchReport,
+)
+from .models import (
     CheckerResult as CheckerResult,
 )
 from .models import (

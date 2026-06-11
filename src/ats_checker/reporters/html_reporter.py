@@ -1,7 +1,7 @@
 import html
 from pathlib import Path
 
-from ..models import CheckReport, Issue, Severity
+from ..models import BatchReport, CheckReport, Issue, Severity
 from .base import BaseReporter, register_reporter
 
 
@@ -125,3 +125,67 @@ class HTMLReporter(BaseReporter):
             output.write_text(report_html, encoding="utf-8")
 
         return report_html
+
+    def _render_file_section(self, result: CheckReport) -> str:
+        """
+        Render the HTML body for a single file's report section.
+
+        Used by both single-file and batch HTML reports.
+        """
+        critical_html = self._render_section(result, Severity.CRITICAL)
+        warning_html = self._render_section(result, Severity.WARNING)
+        ok_html = self._render_section(result, Severity.OK)
+
+        score_str = f"{result.score:.1f}%" if result.score is not None else "N/A"
+        ts_str = (
+            result.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            if hasattr(result.timestamp, "strftime")
+            else str(result.timestamp)
+        )
+
+        section_tpl = _get_template("file_section.html")
+        return (
+            section_tpl.replace("{{filename}}", self._escape(result.pdf_path.name))
+            .replace("{{timestamp}}", self._escape(ts_str))
+            .replace("{{score}}", score_str)
+            .replace("{{critical_count}}", str(result.critical_count))
+            .replace("{{warning_count}}", str(result.warning_count))
+            .replace("{{ok_count}}", str(result.ok_count))
+            .replace("{{critical_issues}}", critical_html)
+            .replace("{{warning_issues}}", warning_html)
+            .replace("{{ok_issues}}", ok_html)
+        )
+
+    def report_batch(self, batch: BatchReport, output: Path | None = None) -> str:
+        """
+        Generate an HTML batch report from multiple check results.
+
+        Args:
+            batch: The BatchReport containing multiple CheckReports.
+            output: Optional path to write the HTML output to.
+
+        Returns:
+            The complete HTML batch report as a string.
+        """
+        file_sections = "\n".join(self._render_file_section(r) for r in batch.reports)
+
+        ts_str = (
+            batch.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            if hasattr(batch.timestamp, "strftime")
+            else str(batch.timestamp)
+        )
+
+        template = _get_template("batch_report.html")
+        html = (
+            template.replace("{{timestamp}}", self._escape(ts_str))
+            .replace("{{total_files}}", str(batch.total_files))
+            .replace("{{files_with_critical}}", str(batch.files_with_critical))
+            .replace("{{files_with_warnings}}", str(batch.files_with_warnings))
+            .replace("{{files_passed}}", str(batch.files_passed))
+            .replace("{{file_sections}}", file_sections)
+        )
+
+        if output:
+            output.write_text(html, encoding="utf-8")
+
+        return html

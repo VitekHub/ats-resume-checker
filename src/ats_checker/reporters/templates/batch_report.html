@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Batch Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
+                ATS Resume Batch Report
+            </h1>
+            <div class="text-slate-500 text-sm space-y-1">
+                <p>Generated on: <span class="font-medium">{{timestamp}}</span></p>
+            </div>
+        </header>
+
+        <!-- Batch Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+                <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Files Checked</span>
+                <span class="text-3xl font-bold text-slate-800">{{total_files}}</span>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+                <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Critical</span>
+                <span class="text-3xl font-bold text-red-600">{{files_with_critical}}</span>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+                <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Warnings</span>
+                <span class="text-3xl font-bold text-amber-500">{{files_with_warnings}}</span>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+                <span class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-2">Passed</span>
+                <span class="text-3xl font-bold text-emerald-600">{{files_passed}}</span>
+            </div>
+        </div>
+
+        <hr class="border-slate-200 mb-12">
+
+        <!-- Per-file Report Sections -->
+        <main>
+            {{file_sections}}
+        </main>
+
+        <footer class="mt-16 pt-8 border-t border-slate-200 text-center text-slate-400 text-xs">
+            Exported from ATS Resume Checker v0.1.0
+        </footer>
+    </div>
+</body>
+</html>
