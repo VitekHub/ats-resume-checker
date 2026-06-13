@@ -98,18 +98,18 @@
 
 **Goal:** Test configuration loading, merging, and custom validation — not default values.
 
-- [ ] Test config from TOML file:
+- [x] Test config from TOML file:
   - Load a partial TOML config → missing keys use defaults
   - Load a full TOML config → all values overridden
-- [ ] Test config from environment variables:
+- [x] Test config from environment variables:
   - `ATS_CHECKER_MAX_FILE_SIZE_KB=2048` → override works
-- [ ] Test config merging priority:
+- [x] Test config merging priority:
   - Defaults ← file ← env vars ← CLI → each layer overrides correctly
-- [ ] Test config validation (custom rules only):
+- [x] Test config validation (custom rules only):
   - `warning_file_size_kb > max_file_size_kb` → validation error
   - `min_text_length < 0` → validation error
   - Empty `expected_sections` → validation error
-- [ ] Test config reaches checkers (R8):
+- [x] Test config reaches checkers (R8):
   - A checker with custom threshold via config → behaves according to that threshold
   - A checker with env-var override → behaves according to that override
 
