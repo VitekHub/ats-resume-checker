@@ -17,6 +17,7 @@ Skips (per X1–X6):
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, Callable
 
 import fitz  # PyMuPDF
 import pytest
@@ -29,6 +30,7 @@ from ats_checker.pdf_utils import (
     extract_font_info,
     extract_images_info,
     extract_text,
+    extract_words,
 )
 
 from .helpers import create_empty_pdf, create_test_pdf
@@ -132,12 +134,15 @@ class TestPDFDocumentErrorHandling:
             ("metadata", lambda pdf: pdf.metadata),
             ("get_page_text", lambda pdf: pdf.get_page_text(0)),
             ("text_property", lambda pdf: pdf.text),
+            ("extract_words", lambda pdf: extract_words(pdf)),
+            ("extract_images_info", lambda pdf: extract_images_info(pdf, Config())),
+            ("extract_font_info", lambda pdf: extract_font_info(pdf)),
         ],
     )
     def test_extraction_error_after_close(
-        self, tmp_path: Path, accessor_name: str, accessor: object
+        self, tmp_path: Path, accessor_name: str, accessor: Callable[[PDFDocument], Any]
     ) -> None:
-        """Properties/methods must raise ExtractionError after close() (R4)."""
+        """Properties/methods/functions must raise ExtractionError after close() (R4)."""
         pdf_bytes = create_test_pdf(text="Closed doc test", pages=1)
         pdf_path = tmp_path / "closed.pdf"
         pdf_path.write_bytes(pdf_bytes)
@@ -147,45 +152,6 @@ class TestPDFDocumentErrorHandling:
 
         with pytest.raises(ExtractionError):
             accessor(pdf)
-
-    def test_extract_words_error_after_close(self, tmp_path: Path) -> None:
-        """extract_words must raise ExtractionError after close() (R4)."""
-        pdf_bytes = create_test_pdf(text="Closed doc words", pages=1)
-        pdf_path = tmp_path / "closed_words.pdf"
-        pdf_path.write_bytes(pdf_bytes)
-
-        from ats_checker.pdf_utils import extract_words
-
-        pdf = PDFDocument(pdf_path)
-        pdf.close()
-
-        with pytest.raises(ExtractionError):
-            extract_words(pdf)
-
-    def test_extract_images_info_error_after_close(self, tmp_path: Path) -> None:
-        """extract_images_info must raise ExtractionError after close() (R4)."""
-        pdf_bytes = create_test_pdf(text="Closed doc images", pages=1)
-        pdf_path = tmp_path / "closed_images.pdf"
-        pdf_path.write_bytes(pdf_bytes)
-
-        pdf = PDFDocument(pdf_path)
-        pdf.close()
-
-        with pytest.raises(ExtractionError):
-            extract_images_info(pdf, Config())
-
-    def test_extract_font_info_error_after_close(self, tmp_path: Path) -> None:
-        """extract_font_info must raise ExtractionError after close() (R4)."""
-        pdf_bytes = create_test_pdf(text="Closed doc fonts", pages=1)
-        pdf_path = tmp_path / "closed_fonts.pdf"
-        pdf_path.write_bytes(pdf_bytes)
-
-        pdf = PDFDocument(pdf_path)
-        pdf.close()
-
-        with pytest.raises(ExtractionError):
-            extract_font_info(pdf)
-
 
 # =============================================================================
 # TestExtractTextCaching
