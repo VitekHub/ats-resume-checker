@@ -72,16 +72,16 @@
 
 **Goal:** Test custom validation rules and error paths in data models — not framework guarantees.
 
-- [ ] Test `Issue` validation:
+- [x] Test `Issue` validation:
   - Empty title raises validation error
   - Invalid severity string raises validation error
-- [ ] Test `CheckerResult` computed properties with non-trivial logic:
+- [x] Test `CheckerResult` computed properties with non-trivial logic:
   - `all_issues` flattens correctly when results have mixed severities
   - `critical_count` / `warning_count` / `ok_count` computed correctly (only if logic is non-trivial)
-- [ ] Test `CheckReport` flattening:
+- [x] Test `CheckReport` flattening:
   - `all_issues` merges issues from multiple `CheckerResult`s correctly
   - Counts are consistent with flattened list
-- [ ] Test `Config` validation rules (from `config.py`):
+- [x] Test `Config` validation rules (from `config.py`):
   - `warning_file_size_kb > max_file_size_kb` → validation error
   - `min_text_length < 0` → validation error
   - Empty `expected_sections` → validation error
