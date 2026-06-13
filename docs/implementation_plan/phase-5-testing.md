@@ -124,17 +124,17 @@
 
 **Goal:** Test our error handling, caching, and normalization logic — not third-party extraction.
 
-- [ ] Test `PDFDocument` error handling:
+- [x] Test `PDFDocument` error handling:
   - Raises `PDFCorruptedError` for corrupted files
   - Raises appropriate error for non-existent files
   - Context manager closes resources even on exception
-- [ ] Test `extract_text()` caching:
+- [x] Test `extract_text()` caching:
   - Second call doesn't re-extract (mock the underlying extractor, assert called once)
-- [ ] Test `extract_text()` normalization (our layer):
+- [x] Test `extract_text()` normalization (our layer):
   - Whitespace normalization, encoding fixes, or other post-processing we add
-- [ ] Test `extract_images_info()` classification logic:
+- [x] Test `extract_images_info()` classification logic:
   - Large vs small image classification works correctly
-- [ ] Test `extract_font_info()` normalization logic:
+- [x] Test `extract_font_info()` normalization logic:
   - Font names are normalized (strip prefixes, lowercase, etc.)
   - Empty set returned for image-only PDFs (test our fallback, not pdfplumber)
 
