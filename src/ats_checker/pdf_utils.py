@@ -40,13 +40,27 @@ class PDFDocument:
 
         try:
             self._pdfplumber_doc = pdfplumber.open(path)
-            self._fitz_doc = fitz.open(path)
-        except fitz.FileDataError as e:
-            raise PDFCorruptedError(f"PDF file is corrupted: {e}") from e
-        except fitz.PasswordError as e:
-            raise PDFPasswordError(f"PDF file is password protected: {e}") from e
         except Exception as e:
             raise PDFCorruptedError(f"Failed to open PDF file: {e}") from e
+
+        try:
+            self._fitz_doc = fitz.open(path)
+        except fitz.FileDataError as e:
+            self._close_pdfplumber()
+            raise PDFCorruptedError(f"PDF file is corrupted: {e}") from e
+        except fitz.FileNotFoundError as e:
+            self._close_pdfplumber()
+            raise PDFCorruptedError(f"PDF file not found: {e}") from e
+        except Exception as e:
+            self._close_pdfplumber()
+            raise PDFCorruptedError(f"Failed to open PDF file: {e}") from e
+
+        if self._fitz_doc.needs_pass:
+            self._close_pdfplumber()
+            self._fitz_doc.close()
+            self._fitz_doc = None
+            self._pdfplumber_doc = None
+            raise PDFPasswordError("PDF file is password protected")
 
     def __enter__(self) -> PDFDocument:
         return self
@@ -54,11 +68,15 @@ class PDFDocument:
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.close()
 
-    def close(self) -> None:
-        """Close both PDF handles to release resources."""
+    def _close_pdfplumber(self) -> None:
+        """Close pdfplumber doc if open (used during __init__ error handling)."""
         if self._pdfplumber_doc:
             self._pdfplumber_doc.close()
             self._pdfplumber_doc = None
+
+    def close(self) -> None:
+        """Close both PDF handles to release resources."""
+        self._close_pdfplumber()
         if self._fitz_doc:
             self._fitz_doc.close()
             self._fitz_doc = None

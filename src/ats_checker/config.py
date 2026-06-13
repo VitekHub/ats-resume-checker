@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 
@@ -48,6 +48,13 @@ class TextExtractionConfig(BaseModel):
     alpha_ratio_critical: float = 0.4
     alpha_ratio_warning: float = 0.6
 
+    @field_validator("min_length_critical")
+    @classmethod
+    def must_be_non_negative(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError("min_length_critical must be non-negative")
+        return v
+
     @model_validator(mode="after")
     def validate_ratios(self) -> TextExtractionConfig:
         if self.alpha_ratio_critical >= self.alpha_ratio_warning:
@@ -87,6 +94,12 @@ class SectionConfig(BaseModel):
             r"\b\+?\d[\d\s\-().]{7,}\d\b",  # International
         ]
     )
+
+    @model_validator(mode="after")
+    def validate_sections_not_empty(self) -> SectionConfig:
+        if not self.expected_sections:
+            raise ValueError("expected_sections must not be empty")
+        return self
 
 
 class FontConfig(BaseModel):
